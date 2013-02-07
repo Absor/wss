@@ -2,19 +2,21 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+                        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
 
     <!-- ========================= RESOURCE DEFINITIONS ========================= -->
 
     <!-- import the dataSource definition -->
     <import resource="applicationContext-dataSource.xml"/>
 
-    <!-- Activates a load-time weaver for the context. -->
-    <context:load-time-weaver/>
+    <!-- Activates a load-time weaver for the context. 
+    <context:load-time-weaver/>-->
 
     <!-- Configurer that replaces ${...} placeholders with values from a properties file -->
     <context:property-placeholder location="classpath:jdbc.properties"/>
@@ -26,7 +28,7 @@
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"/>
         </property>
-        <property name="persistenceXmlLocation" value="classpath:META-INF/jpa-persistence.xml"/>
+        <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"/>
     </bean>
 
     <!-- Hallinnoidaan transaktioita automaattisesti -->
@@ -40,6 +42,6 @@
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
-    <jpa:repositories base-package="wad.tokkel.repository" />
+    <jpa:repositories base-package="ht.haapala.wss.repository" />
 
 </beans>

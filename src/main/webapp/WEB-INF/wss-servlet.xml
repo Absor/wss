@@ -7,10 +7,10 @@
 				http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd">
 
     <!--
-          		- The controllers are autodetected POJOs labeled with the @Controller annotation.
-   	-->
-    <context:component-scan base-package="ht.haapala.wss.controller"/>
-
+                    - The controllers are autodetected POJOs labeled with the @Controller annotation.
+    -->
+    
+    <context:component-scan base-package="ht.haapala"/>
 	
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/"
           p:suffix=".jsp"/>

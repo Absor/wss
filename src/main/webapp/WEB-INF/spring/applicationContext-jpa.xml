@@ -12,6 +12,8 @@
 
     <!-- ========================= RESOURCE DEFINITIONS ========================= -->
 
+    <context:annotation-config/>
+
     <!-- import the dataSource definition -->
     <import resource="applicationContext-dataSource.xml"/>
 

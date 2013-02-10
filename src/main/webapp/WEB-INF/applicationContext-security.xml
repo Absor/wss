@@ -9,9 +9,11 @@
     
     <!-- Path access -->
     <sec:http use-expressions="true">
+        <!--
         <sec:intercept-url pattern="/" access="isAuthenticated()" />
         <sec:intercept-url pattern="/index.html" access="isAuthenticated()" />
-        <sec:intercept-url pattern="/**" access="denyAll" />
+        -->
+        <sec:intercept-url pattern="/**" access="permitAll" />
         <sec:form-login />
         <sec:logout />
     </sec:http>

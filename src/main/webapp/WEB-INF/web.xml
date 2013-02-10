@@ -57,10 +57,10 @@
 
     <servlet-mapping>
         <servlet-name>wss</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/*</url-pattern>
     </servlet-mapping>
     
-    <!-- Allows PUT and DELETE methods via POST -->
+    <!-- Filter: allows PUT and DELETE methods via POST -->
     <filter>
         <filter-name>httpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>

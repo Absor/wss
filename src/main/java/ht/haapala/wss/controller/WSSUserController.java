@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Heikki Haapala
  */
 @Controller
-@RequestMapping(value = "users")
+@RequestMapping(value = "wss/users")
 public class WSSUserController {
     
     @Autowired

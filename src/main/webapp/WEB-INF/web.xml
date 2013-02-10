@@ -54,10 +54,11 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    
     <servlet-mapping>
         <servlet-name>wss</servlet-name>
-        <url-pattern>/</url-pattern>
+        <!-- the REST api itself will be mapped under /wss/* -->
+        <url-pattern>/wss/*</url-pattern>
     </servlet-mapping>
     
     <!-- Filter: allows PUT and DELETE methods via POST -->
@@ -73,7 +74,7 @@
 
     <session-config>
         <session-timeout>10</session-timeout>
-    </session-config>
+    </session-config>  
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

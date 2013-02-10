@@ -7,14 +7,12 @@
 				http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd
                                 http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
+    <!-- Package to scan (and all subpackages) for annotated components -->
     <context:component-scan base-package="ht.haapala"/>
     
-    <!-- Käytetään Spring MVC:tä annotaatioiden avulla -->
+    <!-- Configuration with annotations, not necessary with component-scan -->
+    <context:annotation-config />
+    
+    <!-- Spring MVC config with annotations -->
     <mvc:annotation-driven />
-
-    <!-- Mahdollistetaan konfigurointi annotaatioilla 
-    <context:annotation-config />-->
-	
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/jsp/"
-          p:suffix=".jsp"/>
 </beans>

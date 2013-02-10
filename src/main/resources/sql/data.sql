@@ -1,0 +1,1 @@
+INSERT IGNORE INTO WSSUser (Username, Password, Enabled, UserRole) VALUES ('admin', '$2a$10$4hoJxq8r2xmlwsqnX46Is.U4zqJlNzRgwhWZqK8mENnwW6aSqDhUG', true, 'admin');

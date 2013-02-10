@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/security 
+                            http://www.springframework.org/schema/security/spring-security.xsd">
+    
+    <!-- Path access -->
+    <sec:http use-expressions="true">
+        <sec:intercept-url pattern="/" access="isAuthenticated()" />
+        <sec:intercept-url pattern="/index.html" access="isAuthenticated()" />
+        <sec:intercept-url pattern="/**" access="denyAll" />
+        <sec:form-login />
+        <sec:logout />
+    </sec:http>
+    
+    <!-- Password encoder to use -->
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <sec:authentication-manager>
+        <sec:authentication-provider>
+            <!-- Database authentication manager -->
+            <sec:jdbc-user-service data-source-ref="dataSource"
+                                   users-by-username-query="SELECT Username, Password, Enabled FROM WSSUser WHERE Username = ?" 
+                                   authorities-by-username-query="SELECT Username, UserRole FROM WSSUser WHERE Username = ?"/>
+            <sec:password-encoder ref="passwordEncoder" />
+        </sec:authentication-provider>
+    </sec:authentication-manager>
+    
+    <!-- Access configuration with annotations -->
+    <sec:global-method-security pre-post-annotations="enabled" />
+</beans>

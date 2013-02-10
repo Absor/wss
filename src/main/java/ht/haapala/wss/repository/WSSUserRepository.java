@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  * @author Heikki Haapala
  */
 @Repository
-public interface WSSUserRepository extends JpaRepository<WSSUser, Long> {
+public interface WSSUserRepository extends JpaRepository<WSSUser, String> {
 
     public WSSUser findByUsername(String username);
     

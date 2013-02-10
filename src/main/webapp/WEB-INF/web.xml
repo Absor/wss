@@ -11,12 +11,22 @@
     
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/spring/applicationContext-jpa.xml</param-value>
+        <param-value>/WEB-INF/applicationContext-persistence.xml</param-value>
     </context-param>
     
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+    
+    <!-- Security filter, name has to be exactly this -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <!-- Filter: all requests to UTF-8 -->
     <filter>
@@ -66,13 +76,6 @@
     </session-config>
 
     <welcome-file-list>
-        <welcome-file></welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-    
-    <!--
-    <resource-ref>
-        <res-ref-name>jdbc/petclinic</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>-->
 </web-app>

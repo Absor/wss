@@ -12,15 +12,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Heikki Haapala
  */
 @Controller
-@RequestMapping(value = "/")
+@RequestMapping(value = "users")
 public class WSSUserController {
     
-//    @Autowired
-//    private WSSUserService userService;
+    @Autowired
+    private WSSUserService userService;
     
     @RequestMapping(value = "*", method = RequestMethod.GET)
     @ResponseBody
     public String testi() {
+//              String password = "admin";
+//        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//        String hashedPassword = passwordEncoder.encode(password);
+//        System.out.println(hashedPassword);
         return "Testi";
     }
 }

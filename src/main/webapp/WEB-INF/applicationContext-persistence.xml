@@ -2,26 +2,30 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+                        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-    <!-- ========================= RESOURCE DEFINITIONS ========================= -->
-
-    <context:annotation-config/>
-
-    <!-- import the dataSource definition -->
-    <import resource="applicationContext-dataSource.xml"/>
-
-    <!-- Activates a load-time weaver for the context. 
-    <context:load-time-weaver/>-->
-
+    <!-- Import Spring Security configuration -->
+    <import resource="applicationContext-security.xml"></import>
+    
     <!-- Configurer that replaces ${...} placeholders with values from a properties file -->
     <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!-- Data source configuration -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+              p:driverClassName="${jdbc.driverClassName}" p:url="${jdbc.url}"
+              p:username="${jdbc.username}" p:password="${jdbc.password}"/>
+    
+    <!-- Initialize database with data -->
+    <jdbc:initialize-database data-source="dataSource">
+        <jdbc:script location="${jdbc.dataLocation}"/>
+    </jdbc:initialize-database>
 
     <!-- JPA EntityManagerFactory -->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -33,17 +37,18 @@
         <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml"/>
     </bean>
 
-    <!-- Hallinnoidaan transaktioita automaattisesti -->
+    <!-- Automatic transaction handling -->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
 
+    <!-- Transaction configuration with annotation -->
     <tx:annotation-driven transaction-manager="transactionManager" />
 
-    <!-- Käytetään geneerisiä poikkeuksia -->
+    <!-- Generic exceptions -->
     <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
     <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
+    <!-- Repository package to scan -->
     <jpa:repositories base-package="ht.haapala.wss.repository" />
-
 </beans>

@@ -8,15 +8,30 @@
                             http://www.springframework.org/schema/security/spring-security.xsd">
     
     <!-- Path access -->
-    <sec:http use-expressions="true">
-        <!--
-        <sec:intercept-url pattern="/" access="isAuthenticated()" />
-        <sec:intercept-url pattern="/index.html" access="isAuthenticated()" />
-        -->
-        <sec:intercept-url pattern="/**" access="permitAll" />
-        <sec:form-login />
-        <sec:logout />
+    <sec:http entry-point-ref="loginUrlAuthenticationEntryPoint" auto-config="false" use-expressions="true">
+        <sec:custom-filter position="FORM_LOGIN_FILTER" ref="ajaxUsernamePasswordAuthenticationFilter"/>
+        <sec:intercept-url pattern="/**" access="isAuthenticated()" />
+        <!--<sec:form-login />
+        <sec:logout />-->
     </sec:http>
+
+    <bean id="ajaxUsernamePasswordAuthenticationFilter" class="ht.haapala.wss.filter.AjaxUsernamePasswordAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler" ref="failureHandler"/>
+        <property name="authenticationSuccessHandler" ref="successHandler"/>
+    </bean>
+    
+    <bean id="successHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <property name="defaultTargetUrl" value="/login"/>
+    </bean>
+
+    <bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/login?login_error=1"/>
+    </bean>
+
+    <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/login"/>
+    </bean>    
     
     <!-- Password encoder to use -->
     <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>

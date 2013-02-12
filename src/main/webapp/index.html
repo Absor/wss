@@ -8,12 +8,16 @@
         <link href="assets/css/fullcalendar.print.css" rel="stylesheet" type="text/css" />
     </head>
     <body>
-        <div id="calendar"></div>
+        <section id="loginView">
+            <p>
+                <input id="usernameField" type="text" />
+                <input id="passwordField" type="password" />
+                <input id="loginButton" type="button" value="Log in" />
+            </p>
+        </section>
         
-        <!-- JQuery and calendar plugin -->
+        <!-- JQuery -->
         <script src="assets/js/jquery-1.8.1.min.js"></script>
-        <script src="assets/js/jquery-ui-1.8.23.custom.min.js"></script>
-        <script src="assets/js/fullcalendar.min.js"></script>
         
         <!-- Backbone and templating -->
         <script src="assets/js/lodash.min.js"></script>

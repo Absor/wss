@@ -10,7 +10,7 @@
     <!-- Path access -->
     <sec:http entry-point-ref="loginUrlAuthenticationEntryPoint" auto-config="false" use-expressions="true">
         <sec:intercept-url pattern="/index.html" access="permitAll" />
-        <sec:intercept-url pattern="/wss/assets/*" access="permitAll" />
+        <sec:intercept-url pattern="/resources/**" access="permitAll" />
         <sec:intercept-url pattern="/login" access="permitAll" />
         <sec:intercept-url pattern="/logout" access="permitAll" />
         <sec:intercept-url pattern="/**" access="isAuthenticated()" />
@@ -28,11 +28,11 @@
         <property name="authenticationSuccessHandler" ref="securityLoginSuccessHandler" />
     </bean>
     
-    <bean id="securityLoginSuccessHandler" class="ht.haapala.wss.filter.AjaxUrlAuthenticationSuccessHandler">
+    <bean id="securityLoginSuccessHandler" class="ht.haapala.wss.authentication.AjaxAuthenticationSuccessHandler">
         <property name="defaultTargetUrl" value="/login"/>
     </bean>
 
-    <bean id="securityLoginFailureHandler" class="ht.haapala.wss.filter.AjaxAuthenticationFailureHandler">
+    <bean id="securityLoginFailureHandler" class="ht.haapala.wss.authentication.AjaxAuthenticationFailureHandler">
         <property name="defaultFailureUrl" value="/login/failure"/>
     </bean>
 

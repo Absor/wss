@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ht.haapala.wss.filter;
+package ht.haapala.wss.authentication;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -15,15 +15,15 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
  *
  * @author heha
  */
-public class AjaxUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class AjaxAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    public AjaxUrlAuthenticationSuccessHandler() {
+    public AjaxAuthenticationSuccessHandler() {
         super();
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        response.getWriter().print("fail");
+        response.getWriter().print("success");
         response.getWriter().flush();
     }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ht.haapala.wss.filter;
+package ht.haapala.wss.authentication;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -23,7 +23,7 @@ public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.getWriter().print("ok");
+        response.getWriter().print("failure");
         response.getWriter().flush();
     }    
 }

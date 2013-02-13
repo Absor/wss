@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ht.haapala.wss.authentication;
 
 import java.io.IOException;
@@ -13,17 +9,17 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 
 /**
  *
- * @author heha
+ * @author Heikki Haapala
  */
 public class AjaxAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-
-    public AjaxAuthenticationFailureHandler() {
-        super();
-    }
-
+    
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        response.getWriter().print("failure");
-        response.getWriter().flush();
-    }    
+        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+            response.getWriter().print("login_fail");
+            response.getWriter().flush();
+        } else {
+            super.onAuthenticationFailure(request, response, exception);
+        }
+    }
 }

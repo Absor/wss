@@ -16,5 +16,6 @@
     <!-- Spring MVC config with annotations -->
     <mvc:annotation-driven />
     
+    <!-- Static resources path -->
     <mvc:resources mapping="/resources/**" location="/resources/" />
 </beans>

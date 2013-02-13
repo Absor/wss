@@ -13,18 +13,20 @@ $(document).ready(function() {
     //    });
 
     $("#loginButton").click(function() {
+        console.log("Testi");
         var username = $("#usernameField").val();
         var password = $("#passwordField").val();
         console.log(username + " " + password);
         $.ajax({
             type: "POST",
-            url: "j_spring_security_check",
+            url: "wss/j_spring_security_check",
             data: {
                 j_username: username, 
                 j_password: password
+            },
+            success: function(data) {
+                console.log(data);
             }
-        }).done(function(message) {
-            console.log(message);
         });
     });
 });

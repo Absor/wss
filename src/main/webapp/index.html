@@ -8,6 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="resources/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="resources/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="resources/css/bootstrap-datetimepicker.css" rel="stylesheet">
     </head>
     <body>
         <div class="navbar navbar-static-top">
@@ -52,8 +53,8 @@
                         {{#if employer}}
                         <li class="divider"></li>
                         <li class="nav-header">Employer</li>
-                        <li><a href="#" id="shift-view-link">Shifts</a></li>
-                        <li><a href="#" id="employee-view-link">Employees</a></li>
+                        <li><a href="#" id="shift-view-link">Work shifts</a></li>
+                        <li><a href="#" id="employee-view-link">Users</a></li>
                         {{/if}}
                     </ul>
                 </li>
@@ -61,22 +62,21 @@
         </script>
 
         <script id="login-view-template" type="text/html">
+            {{#if username}}
             <form class="navbar-form pull-right">
-                <input class="span2" type="text" placeholder="Username" id="username-field">
-                <input class="span2" type="password" placeholder="Password" id="password-field">
-                <button type="submit" class="btn" id="login-button">Log in</button>
-            </form>
-        </script>
-
-        <script id="logout-view-template" type="text/html">
-            <form class="navbar-form pull-right">
-
                 <button type="submit" class="btn" id="logout-button">Log out</button>
             </form>
             <ul class="nav pull-right">
                 <li class="divider-vertical"></li>
             </ul>
             <p class="nav navbar-text pull-right">Logged in as {{username}}</p>
+            {{else}}
+            <form class="navbar-form pull-right">
+                <input class="span2" type="text" placeholder="Username" id="username-field">
+                <input class="span2" type="password" placeholder="Password" id="password-field">
+                <button type="submit" class="btn" id="login-button">Log in</button>
+            </form>
+            {{/if}}
         </script>
 
         <script id="login-alert-template" type="text/html">
@@ -109,8 +109,84 @@
             </div>
         </script>
 
+        <script id="shift-view-template" type="text/html">
+            <div class="container">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="span5">Shift name</th>
+                            <th class="span3">Start time</th>
+                            <th class="span3">End time</th>
+                            <th class="span1">
+                                <button class="btn btn-small btn-success" type="button" id="show-modal-button">
+                                    <i class="icon-plus"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button class="btn btn-small btn-danger" type="button">
+                                    <i class="icon-remove"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="modal hide fade" id="shift-add-modal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>Add new work shift</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label" for="shiftName-field">Shift name</label>
+                            <div class="controls">
+                                <input type="text" id="shiftName-field" placeholder="Shift name">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="start-timepicker">Start time</label>
+                            <div class="controls">
+                                <div class="input-append date" id="start-timepicker">
+                                    <input type="text" readonly>
+                                    <span class="add-on"><i class="icon-time"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="end-timepicker">End time</label>
+                            <div class="controls">
+                                <div class="input-append date" id="end-timepicker">
+                                    <input type="text" readonly>
+                                    <span class="add-on"><i class="icon-time"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" id="close-modal-button">Close</a>
+                    <a href="#" class="btn btn-primary" id="add-shift-button">Add shift</a>
+                </div>
+            </div>
+        </script>
+
+        <script id="employee-view-template" type="text/html">
+            <div class="container">
+                emp!
+            </div>
+        </script>
+
         <!-- JQuery -->
-        <script src="resources/js/jquery-1.8.1.min.js"></script>
+        <script src="resources/js/jquery-1.9.1.min.js"></script>
 
         <!-- Backbone and templating -->
         <script src="resources/js/lodash.min.js"></script>
@@ -119,6 +195,7 @@
 
         <!-- Bootstrap -->
         <script src="resources/js/bootstrap.min.js"></script>
+        <script src="resources/js/bootstrap-datetimepicker.js"></script>
 
         <!-- WSS scripts -->
         <script src="resources/js/wss-scripts.js"></script>

@@ -5,7 +5,7 @@ $(document).ready(function() {
     new wss.view.NavigationView();
     // add login/logout view
     new wss.view.LoginView();
-    // main view
+    // start with week view
     new wss.view.WeekView();
 
     // update logged in user information
@@ -84,16 +84,16 @@ wss.view.LoginView = Backbone.View.extend({
         });
     },
     render: function() {
-        // if user is logged in show logout, otherwise show login
+        // put template through handlebars
+        var source = $("#login-view-template").html();
+        var template = Handlebars.compile(source);
+        var html;
         if (wss.loggedUser.has("username")) {
-            // put template through handlebars so we get username into view
-            var source = $("#logout-view-template").html();
-            var template = Handlebars.compile(source);
-            var html = template({username: wss.loggedUser.get("username")});
-            this.$el.html(html);
+            html = template({username: wss.loggedUser.get("username")});
         } else {
-            this.$el.html($("#login-view-template").html());
+            html = template({});
         }
+        this.$el.html(html);
     }
 });
 
@@ -157,8 +157,37 @@ wss.view.ShiftView = Backbone.View.extend({
     el: $("#main-view"),
     initialize: function() {
         this.$el.html($("#shift-view-template").html());
+        // set up timepickers
+        var pickerSettings = {
+            format: "hh:ii",
+            startView: "day",
+            minView: "hour",
+            maxView: "day",
+            pickerPosition: "bottom-left",
+            autoclose: true
+        };
+        $("#start-timepicker").datetimepicker(pickerSettings);
+        $("#end-timepicker").datetimepicker(pickerSettings);
     },
     events: {
+        "click #show-modal-button": "showModal",
+        "click #close-modal-button": "closeModal",
+        "click #add-shift-button": "addShift"
+    },
+    showModal: function(eventInfo) {
+        eventInfo.preventDefault();
+        $('#shift-add-modal').modal({
+            backdrop: "static",
+            keyboard: false
+        });
+    },
+    closeModal: function(eventInfo) {
+        eventInfo.preventDefault();
+        $('#shift-add-modal').modal('hide');
+    },
+    addShift: function(eventInfo) {
+        eventInfo.preventDefault();
+        console.log("jee");
     }
 });
 

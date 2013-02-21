@@ -3,27 +3,123 @@
     <head>
         <title>Work Shift Scheduler</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        
-        <link href="resources/css/fullcalendar.css" rel="stylesheet" type="text/css" />
-        <link href="resources/css/fullcalendar.print.css" rel="stylesheet" type="text/css" />
+
+        <!-- Bootstrap -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="resources/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="resources/css/bootstrap-responsive.min.css" rel="stylesheet">
     </head>
     <body>
-        <section id="loginView">
-            <p>
-                <input id="usernameField" type="text" />
-                <input id="passwordField" type="password" />
-                <input id="loginButton" type="button" value="Log in" />
-            </p>
-        </section>
-        
+        <div class="navbar navbar-static-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="#">WSS</a>
+                    <div id="navigation-view">
+                    </div>
+                    <div class="nav-collapse collapse">
+                        <div id="login-view">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alert-view">
+        </div>
+
+        <div id="main-view">
+        </div>
+
+        <!-- TEMPLATES -->
+
+        <script id="navigation-view-template" type="text/html">
+            <ul class="nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="week-view-link">Week view</a></li>
+                        {{#if employee}}
+                        <li class="divider"></li>
+                        <li class="nav-header">Employee</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                        {{/if}}
+                        {{#if employer}}
+                        <li class="divider"></li>
+                        <li class="nav-header">Employer</li>
+                        <li><a href="#" id="shift-view-link">Shifts</a></li>
+                        <li><a href="#" id="employee-view-link">Employees</a></li>
+                        {{/if}}
+                    </ul>
+                </li>
+            </ul>
+        </script>
+
+        <script id="login-view-template" type="text/html">
+            <form class="navbar-form pull-right">
+                <input class="span2" type="text" placeholder="Username" id="username-field">
+                <input class="span2" type="password" placeholder="Password" id="password-field">
+                <button type="submit" class="btn" id="login-button">Log in</button>
+            </form>
+        </script>
+
+        <script id="logout-view-template" type="text/html">
+            <form class="navbar-form pull-right">
+
+                <button type="submit" class="btn" id="logout-button">Log out</button>
+            </form>
+            <ul class="nav pull-right">
+                <li class="divider-vertical"></li>
+            </ul>
+            <p class="nav navbar-text pull-right">Logged in as {{username}}</p>
+        </script>
+
+        <script id="login-alert-template" type="text/html">
+            <div class="alert">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                Wrong username or password.
+            </div>
+        </script>
+
+        <script id="week-view-template" type="text/html">
+            <div class="container">
+                <div class="row">
+                    <div class="span4 offset8">
+                        <div class="btn-toolbar">
+                            <div class="btn-group">
+                                <a class="btn" href="#"><i class="icon-chevron-left"></i></a>
+                                <a class="btn" href="#">Today</i></a>
+                                <a class="btn" href="#"><i class="icon-chevron-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="span2 offset1">...</div>
+                    <div class="span2">...</div>
+                    <div class="span2">...</div>
+                    <div class="span2">...</div>
+                    <div class="span2">...</div>
+                </div>
+            </div>
+        </script>
+
         <!-- JQuery -->
         <script src="resources/js/jquery-1.8.1.min.js"></script>
-        
+
         <!-- Backbone and templating -->
         <script src="resources/js/lodash.min.js"></script>
         <script src="resources/js/backbone-min.js"></script>
         <script src="resources/js/handlebars.js"></script>
-        
+
+        <!-- Bootstrap -->
+        <script src="resources/js/bootstrap.min.js"></script>
+
         <!-- WSS scripts -->
         <script src="resources/js/wss-scripts.js"></script>
     </body>

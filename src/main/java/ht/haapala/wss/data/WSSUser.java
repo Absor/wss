@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -18,6 +19,7 @@ public class WSSUser implements Serializable {
     @Column(name = "Username")
     private String username;
     @Column(name = "Password")
+    @JsonIgnore
     private String password;
     @Column(name = "Enabled")
     private boolean enabled;

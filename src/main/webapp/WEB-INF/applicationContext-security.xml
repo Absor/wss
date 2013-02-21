@@ -13,14 +13,19 @@
         <sec:intercept-url pattern="/resources/**" access="permitAll" />
         <sec:intercept-url pattern="/login" access="permitAll" />
         <sec:intercept-url pattern="/logout" access="permitAll" />
+        <sec:intercept-url pattern="/wss/users/loggedin" access="permitAll" />
         <sec:intercept-url pattern="/**" access="isAuthenticated()" />
         
         <sec:access-denied-handler error-page="/denied" />
-        <sec:logout invalidate-session="true" logout-success-url="/" logout-url="/logout" />
+        <sec:logout invalidate-session="true" logout-url="/logout" success-handler-ref="logoutSuccessHandler" />
         <sec:custom-filter ref="authenticationFilter" position="FORM_LOGIN_FILTER"/>
     </sec:http>
 
     <!-- Custom AJAX authentication config -->
+    <bean id="logoutSuccessHandler" class="ht.haapala.wss.authentication.AjaxLogoutSuccessHandler">
+        <property name="defaultTargetUrl" value="/"/>
+    </bean>
+    
     <bean id="authenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="filterProcessesUrl" value="/login" />

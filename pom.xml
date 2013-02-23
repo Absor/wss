@@ -62,6 +62,12 @@
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.12</version>
         </dependency>
+        <!-- Object validation -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.3.1.Final</version>
+        </dependency>
         <!-- Persistence & database-->
         <dependency>
             <groupId>org.springframework.data</groupId>

@@ -16,7 +16,7 @@
         <sec:intercept-url pattern="/wss/users/loggedin" access="permitAll" />
         <sec:intercept-url pattern="/wss/users/**" access="hasRole('employer')" />
         <sec:intercept-url pattern="/wss/shifts/**" access="hasRole('employer')" />
-        <sec:intercept-url pattern="/**" access="isAuthenticated()" />
+        <sec:intercept-url pattern="/**" access="denyAll" />
         
         <sec:access-denied-handler error-page="/denied" />
         <sec:logout invalidate-session="true" logout-url="/logout" success-handler-ref="logoutSuccessHandler" />

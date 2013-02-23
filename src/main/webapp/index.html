@@ -41,7 +41,7 @@
         <script id="navigation-view-template" type="text/html">
             <ul class="nav">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Menu <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" id="week-view-link">Week view</a></li>
                         {{#if employee}}
@@ -79,10 +79,10 @@
             {{/if}}
         </script>
 
-        <script id="login-alert-template" type="text/html">
+        <script id="alert-template" type="text/html">
             <div class="alert">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                Wrong username or password.
+                {{alert}}
             </div>
         </script>
 
@@ -114,9 +114,10 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th class="span5">Shift name</th>
-                            <th class="span3">Start time</th>
-                            <th class="span3">End time</th>
+                            <th class="span1">ID</th>
+                            <th class="span6">Shift name</th>
+                            <th class="span2">Start time</th>
+                            <th class="span2">End time</th>
                             <th class="span1">
                                 <button class="btn btn-small btn-success" type="button" id="show-modal-button">
                                     <i class="icon-plus"></i>
@@ -125,16 +126,19 @@
                         </tr>
                     </thead>
                     <thead>
+                        {{#each shift}}
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td>{{this.id}}</td>
+                            <td>{{this.shiftName}}</td>
+                            <td>{{this.startTime}}</td>
+                            <td>{{this.endTime}}</td>
                             <td>
-                                <button class="btn btn-small btn-danger" type="button">
+                                <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
                                     <i class="icon-remove"></i>
                                 </button>
                             </td>
                         </tr>
+                        {{/each}}
                     </thead>
                 </table>
             </div>
@@ -146,26 +150,26 @@
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
-                        <div class="control-group">
-                            <label class="control-label" for="shiftName-field">Shift name</label>
+                        <div class="control-group" id="shift-name-control">
+                            <label class="control-label" for="shift-name-field">Shift name</label>
                             <div class="controls">
-                                <input type="text" id="shiftName-field" placeholder="Shift name">
+                                <input type="text" id="shift-name-field" placeholder="Shift name">
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="control-group" id="start-time-control">
                             <label class="control-label" for="start-timepicker">Start time</label>
                             <div class="controls">
                                 <div class="input-append date" id="start-timepicker">
-                                    <input type="text" readonly>
+                                    <input class="input-mini" type="text" id="start-time-field" readonly>
                                     <span class="add-on"><i class="icon-time"></i></span>
                                 </div>
                             </div>
                         </div>
-                        <div class="control-group">
+                        <div class="control-group" id="end-time-control">
                             <label class="control-label" for="end-timepicker">End time</label>
                             <div class="controls">
                                 <div class="input-append date" id="end-timepicker">
-                                    <input type="text" readonly>
+                                    <input class="input-mini" type="text" id="end-time-field" readonly>
                                     <span class="add-on"><i class="icon-time"></i></span>
                                 </div>
                             </div>

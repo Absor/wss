@@ -103,7 +103,7 @@
                 <div class="row show-week-title-grid show-shift-grid">
                     <div class="span2 hidden-phone">
                         <div class="row">
-                            <div class="span2 week-title"></div>
+                            <div class="span2 week-title">Week {{week.weekNumber}}</div>
                         </div>
                         {{#each shift}}
                         <div class="row">
@@ -114,11 +114,66 @@
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2 week-title">Monday</div>
-                    <div class="span2 week-title">Tuesday</div>
-                    <div class="span2 week-title">Wednesday</div>
-                    <div class="span2 week-title">Thursday</div>
-                    <div class="span2 week-title">Friday</div>
+                    <div class="span2">
+                        <div class="row">
+                            <div class="span2 week-title">Monday {{week.monday}}</div>
+                        </div>
+                        {{#each planned.monday.shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">
+                                {{this.id}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="span2">
+                        <div class="row">
+                            <div class="span2 week-title">Tuesday {{week.tuesday}}</div>
+                        </div>
+                        {{#each planned.tuesday.shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">
+                                {{this.id}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="span2">
+                        <div class="row">
+                            <div class="span2 week-title">Wednesday {{week.wednesday}}</div>
+                        </div>
+                        {{#each planned.wednesday.shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">
+                                {{this.id}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="span2">
+                        <div class="row">
+                            <div class="span2 week-title">Thursday {{week.thursday}}</div>
+                        </div>
+                        {{#each planned.thursday.shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">
+                                {{this.id}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="span2">
+                        <div class="row">
+                            <div class="span2 week-title">Friday {{week.friday}}</div>
+                        </div>
+                        {{#each planned.friday.shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">
+                                {{this.id}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
                 </div>
             </div>
         </script>

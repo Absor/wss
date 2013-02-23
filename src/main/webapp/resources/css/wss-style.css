@@ -11,4 +11,5 @@
 .show-shift-grid [class*="shift-block"] {
     text-align: center;
     padding-top: 10px;
+    min-height: 50px;
 }

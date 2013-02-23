@@ -59,6 +59,12 @@ var wss = {
             minutes = "0" + minutes;
         }
         return parseInt(hours + "" + minutes);
+    },
+    dateString: function(msDate) {
+        var date = new Date(msDate);
+        var day = date.getDate();
+        var month = date.getMonth();
+        return day + "." + month + ".";
     }
 };
 
@@ -177,11 +183,15 @@ wss.view.WeekView = Backbone.View.extend({
     initialize: function() {
         // set and update model
         this.model = {
+            weekdays: new wss.model.DayList(),
             shifts: new wss.model.ShiftList(),
             plannedShifts: new wss.model.PlannedShiftList()
         };
+        this.model.weekdays.on("all", this.render, this);
+        this.model.weekdays.fetch();
         this.model.shifts.on("all", this.render, this);
         this.model.shifts.fetch();
+        this.model.plannedShifts.on("all", this.render, this);
         this.model.plannedShifts.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
@@ -198,13 +208,63 @@ wss.view.WeekView = Backbone.View.extend({
         var source = $("#week-view-template").html();
         var template = Handlebars.compile(source);
         var jsonData = this.model.shifts.toJSON();
+
+        var shifts = [];
+
+        var shiftsJSON = this.model.shifts.toJSON();
+        var plannedShiftsJSON = this.model.plannedShifts.toJSON();
+
+        // format week days for view
+        var weekdaysJSON = this.model.weekdays.toJSON();
+        var weekDays;
+        if (weekdaysJSON[0]) {
+            var content = weekdaysJSON[0];
+            weekDays = this.formatWeek(content);
+
+            // add to shifts too
+            var i = 0;
+            $.each(weekDays, function(day, item) {
+                if (day === "weekNumber") {
+                    return;
+                }
+                shifts[day] = {
+                    date: item,
+                    shift: shiftsJSON
+                };
+                i++;
+            });
+
+            $.each(plannedShiftsJSON, function(i, planned) {
+                planned.shiftDate = wss.dateString(planned.shiftDate);
+
+                $.each(shifts, function(i, shift) {
+                    if(shift.date === planned.shiftDate) {
+                        // TODO
+                        console.log(shift.date);
+                    }
+                });
+            });
+        }
+
+        console.log(shifts);
+
         // format dates
         $.each(jsonData, function(index, item) {
             item.startTime = wss.timeString(item.startTime);
             item.endTime = wss.timeString(item.endTime);
         });
-        var html = template({shift: jsonData});
+        var html = template({shift: jsonData, week: weekDays, planned: shifts});
         this.$el.html(html);
+    },
+    formatWeek: function(content) {
+        return {
+            weekNumber: content.weekNumber,
+            monday: wss.dateString(content.days[0]),
+            tuesday: wss.dateString(content.days[1]),
+            wednesday: wss.dateString(content.days[2]),
+            thursday: wss.dateString(content.days[3]),
+            friday: wss.dateString(content.days[4])
+        };
     }
 });
 
@@ -409,6 +469,13 @@ wss.view.UserView = Backbone.View.extend({
 });
 
 // MODELS
+
+wss.model.Day = Backbone.Model.extend({});
+
+wss.model.DayList = Backbone.Collection.extend({
+    model: wss.model.Day,
+    url: "wss/plannedshifts/weekinfo"
+});
 
 wss.model.LoggedUser = Backbone.Model.extend({});
 

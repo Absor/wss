@@ -1,6 +1,7 @@
 package ht.haapala.wss.controller;
 
 import ht.haapala.wss.data.PlannedShift;
+import ht.haapala.wss.data.Week;
 import ht.haapala.wss.service.PlannedShiftService;
 import ht.haapala.wss.service.WSSUserService;
 import ht.haapala.wss.service.WorkShiftService;
@@ -61,11 +62,17 @@ public class PlannedShiftController {
         return plannedShiftService.findByWeek(weekNumber);
     }
     
-    @RequestMapping(value = "weeknumber", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "weekinfo", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
-    public int weekNumber() {
-        return LocalDate.now().getWeekOfWeekyear();
+    public Week weekInfo() {
+        return new Week();
+    }
+    @RequestMapping(value = "weekinfo/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @PreAuthorize("permitAll")
+    public Week weekInfoByNumber(@PathVariable int weekNumber) {
+        return new Week(weekNumber);
     }
 
     @RequestMapping(value = "{plannedShiftId}", method = RequestMethod.DELETE)

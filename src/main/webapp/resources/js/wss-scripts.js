@@ -35,6 +35,30 @@ var wss = {
         var source = $("#alert-template").html();
         var template = Handlebars.compile(source);
         return template({alert: alertText});
+    },
+    timeString: function(msDate) {
+        var date = new Date(msDate);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        if (hours < 10) {
+            hours = "0" + hours;
+        }
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        return hours + ":" + minutes;
+    },
+    timeInt: function(msDate) {
+        var date = new Date(msDate);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        if (hours < 10) {
+            hours = "0" + hours;
+        }
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+        return parseInt(hours + "" + minutes);
     }
 };
 
@@ -151,11 +175,24 @@ wss.view.NavigationView = Backbone.View.extend({
 wss.view.WeekView = Backbone.View.extend({
     el: $("#main-view"),
     initialize: function() {
+        // set and update model
+        this.model = new wss.model.ShiftList();
+        this.model.on("all", this.render, this);
+        this.model.fetch({add: true});
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
-        this.$el.html($("#week-view-template").html());
+        // show this view
+        this.render();
     },
     events: {
+    },
+    render: function() {
+        // put template through handlebars
+        var source = $("#week-view-template").html();
+        var template = Handlebars.compile(source);
+        var jsonData = this.model.toJSON();
+        var html = template({shift: jsonData});
+        this.$el.html(html);
     }
 });
 
@@ -246,8 +283,8 @@ wss.view.ShiftView = Backbone.View.extend({
         var jsonData = this.model.toJSON();
         // format dates
         $.each(jsonData, function(index, item) {
-            item.startTime = new Date(item.startTime);
-            item.endTime = new Date(item.endTime);
+            item.startTime = wss.timeString(item.startTime);
+            item.endTime = wss.timeString(item.endTime);
         });
         var html = template({shift: jsonData});
         this.$el.html(html);
@@ -305,5 +342,18 @@ wss.model.WorkShift = Backbone.Model.extend({
 
 wss.model.ShiftList = Backbone.Collection.extend({
     model: wss.model.WorkShift,
-    url: "/wss/shifts"
+    url: "/wss/shifts",
+    comparator: function(shift1, shift2) {
+        // sorts by start time
+        var value = wss.timeInt(shift1.get("startTime")) - wss.timeInt(shift2.get("startTime"));
+        if (value < 0) {
+            return -1;
+        }
+        if (value === 0) {
+            return 0;
+        }
+        if (value > 0) {
+            return 1;
+        }
+    }
 });

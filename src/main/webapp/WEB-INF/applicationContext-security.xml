@@ -9,13 +9,16 @@
    
     <sec:http entry-point-ref="loginUrlAuthenticationEntryPoint" auto-config="false" use-expressions="true">
         <!-- Path access -->
+        <!-- public -->
         <sec:intercept-url pattern="/index.html" access="permitAll" />
         <sec:intercept-url pattern="/resources/**" access="permitAll" />
         <sec:intercept-url pattern="/login" access="permitAll" />
         <sec:intercept-url pattern="/logout" access="permitAll" />
         <sec:intercept-url pattern="/wss/users/loggedin" access="permitAll" />
+        <!-- for authenticated users -->
         <sec:intercept-url pattern="/wss/users/**" access="hasRole('employer')" />
         <sec:intercept-url pattern="/wss/shifts/**" access="hasRole('employer')" />
+        <!-- deny all rest -->
         <sec:intercept-url pattern="/**" access="denyAll" />
         
         <sec:access-denied-handler error-page="/denied" />

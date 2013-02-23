@@ -16,14 +16,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 public class WSSUser implements Serializable {
 
     @Id
-    @Column(name = "Username")
+    @Column(name = "Username", nullable = false)
     private String username;
     @Column(name = "Password")
     @JsonIgnore
     private String password;
-    @Column(name = "Enabled")
+    @Column(name = "Enabled", nullable = false)
     private boolean enabled;
-    @Column(name = "UserRole")
+    @Column(name = "UserRole", nullable = false)
     private String role;
 
     public String getUsername() {

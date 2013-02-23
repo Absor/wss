@@ -1,0 +1,15 @@
+.show-week-title-grid [class*="week-title"] {
+    background-color: #E7E7E7;
+    text-align: center;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    min-height: 30px;
+    line-height: 30px;
+}
+
+.show-shift-grid [class*="shift-block"] {
+    text-align: center;
+    min-height: 40px;
+    line-height: 40px;
+}

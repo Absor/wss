@@ -21,18 +21,18 @@ import org.hibernate.validator.constraints.NotBlank;
 public class WorkShift implements Serializable {
 
     @Id
-    @Column(name = "ID")
+    @Column(name = "ShiftId", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "ShiftName")
+    @Column(name = "ShiftName", nullable = false)
     @NotBlank
     @Length(min = 3)
     private String shiftName;
     @Temporal(javax.persistence.TemporalType.TIME)
-    @Column(name = "StartTime")
+    @Column(name = "StartTime", nullable = false)
     private Date startTime;
     @Temporal(javax.persistence.TemporalType.TIME)
-    @Column(name = "EndTime")
+    @Column(name = "EndTime", nullable = false)
     private Date endTime;
 
     public Long getId() {

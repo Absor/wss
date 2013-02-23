@@ -9,6 +9,7 @@
         <link href="resources/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="resources/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="resources/css/bootstrap-datetimepicker.css" rel="stylesheet">
+        <link href="resources/css/wss-style.css" rel="stylesheet">
     </head>
     <body>
         <div class="navbar navbar-static-top">
@@ -89,8 +90,8 @@
         <script id="week-view-template" type="text/html">
             <div class="container">
                 <div class="row">
-                    <div class="span4 offset8">
-                        <div class="btn-toolbar">
+                    <div class="span2 offset10">
+                        <div class="btn-toolbar pull-right">
                             <div class="btn-group">
                                 <a class="btn" href="#"><i class="icon-chevron-left"></i></a>
                                 <a class="btn" href="#">Today</i></a>
@@ -99,12 +100,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="span2 offset1">...</div>
-                    <div class="span2">...</div>
-                    <div class="span2">...</div>
-                    <div class="span2">...</div>
-                    <div class="span2">...</div>
+                <div class="row show-week-title-grid show-shift-grid">
+                    <div class="span2 hidden-phone">
+                        <div class="row">
+                            <div class="span2 week-title"></div>
+                        </div>
+                        {{#each shift}}
+                        <div class="row">
+                            <div class="span2 shift-block">{{this.shiftName}}</div>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="span2 week-title">Monday</div>
+                    <div class="span2 week-title">Tuesday</div>
+                    <div class="span2 week-title">Wednesday</div>
+                    <div class="span2 week-title">Thursday</div>
+                    <div class="span2 week-title">Friday</div>
                 </div>
             </div>
         </script>

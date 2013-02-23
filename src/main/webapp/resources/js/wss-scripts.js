@@ -150,7 +150,7 @@ wss.view.NavigationView = Backbone.View.extend({
     },
     employeeView: function(eventInfo) {
         eventInfo.preventDefault();
-        new wss.view.EmployeeView();
+        new wss.view.UserView();
     },
     render: function() {
         // put template through handlebars
@@ -176,21 +176,33 @@ wss.view.WeekView = Backbone.View.extend({
     el: $("#main-view"),
     initialize: function() {
         // set and update model
-        this.model = new wss.model.ShiftList();
-        this.model.on("all", this.render, this);
-        this.model.fetch({add: true});
+        this.model = {
+            shifts: new wss.model.ShiftList(),
+            plannedShifts: new wss.model.PlannedShiftList()
+        };
+        this.model.shifts.on("all", this.render, this);
+        this.model.shifts.fetch();
+        this.model.plannedShifts.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
         // show this view
         this.render();
     },
     events: {
+//        "#minus-week-button": "minusWeek",
+//        "#today-button": "today",
+//        "#plus-week-button": "plusWeek"
     },
     render: function() {
         // put template through handlebars
         var source = $("#week-view-template").html();
         var template = Handlebars.compile(source);
-        var jsonData = this.model.toJSON();
+        var jsonData = this.model.shifts.toJSON();
+        // format dates
+        $.each(jsonData, function(index, item) {
+            item.startTime = wss.timeString(item.startTime);
+            item.endTime = wss.timeString(item.endTime);
+        });
         var html = template({shift: jsonData});
         this.$el.html(html);
     }
@@ -203,7 +215,7 @@ wss.view.ShiftView = Backbone.View.extend({
         // set and update model
         this.model = new wss.model.ShiftList();
         this.model.on("all", this.render, this);
-        this.model.fetch({add: true});
+        this.model.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
         // show this view
@@ -302,15 +314,97 @@ wss.view.ShiftView = Backbone.View.extend({
     }
 });
 
-// employee view
-wss.view.EmployeeView = Backbone.View.extend({
+// user view
+wss.view.UserView = Backbone.View.extend({
     el: $("#main-view"),
     initialize: function() {
+        // set and update model
+        this.model = new wss.model.UserList();
+        this.model.on("all", this.render, this);
+        this.model.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
-        this.$el.html($("#employee-view-template").html());
+        // show this view
+        this.render();
     },
     events: {
+        "click #show-modal-button": "showModal",
+        "click #close-modal-button": "closeModal",
+        "click #add-shift-button": "addShift",
+        "click tr td button": "deleteShift"
+    },
+    showModal: function(eventInfo) {
+        eventInfo.preventDefault();
+        $('#shift-add-modal').modal({
+            backdrop: "static",
+            keyboard: false
+        });
+    },
+//    closeModal: function(eventInfo) {
+//        eventInfo.preventDefault();
+//        $('#shift-add-modal').modal('hide');
+//    },
+//    addShift: function(eventInfo) {
+//        eventInfo.preventDefault();
+//        // remove errors if any
+//        $("#shift-name-control").removeClass("error");
+//        $("#start-time-control").removeClass("error");
+//        $("#end-time-control").removeClass("error");
+//        // get form contents and check for errors
+//        var shiftName = $("#shift-name-field").val();
+//        // change times to dates
+//        var startTime = this.timeStringToDateValue($("#start-time-field").val());
+//        var endTime = this.timeStringToDateValue($("#end-time-field").val());
+//        // new model
+//        var shift = new wss.model.WorkShift({
+//            shiftName: shiftName,
+//            startTime: startTime,
+//            endTime: endTime
+//        });
+//        // check for validity
+//        var error = shift.validate();
+//        if (error) {
+//            if (error.field === "shiftName") {
+//                $("#shift-name-control").addClass("error");
+//            } else if (error.field === "startTime") {
+//                $("#start-time-control").addClass("error");
+//            } else if (error.field === "endTime") {
+//                $("#end-time-control").addClass("error");
+//            }
+//            return;
+//        }
+//        // close modal
+//        $('#shift-add-modal').modal('hide');
+//        // add to model
+//        this.model.create(shift);
+//    },
+//    timeStringToDateValue: function(timeString) {
+//        var time = new Date();
+//        time.setHours(parseInt(timeString.substring(0, 2), 10));
+//        time.setMinutes(parseInt(timeString.substring(3, 5), 10));
+//        time.setSeconds(0);
+//        return time.valueOf();
+//    },
+//    deleteShift: function(eventInfo) {
+//        eventInfo.preventDefault();
+//        var id = $(eventInfo.target).data("id");
+//        if (id) {
+//            this.model.find(function(item) {
+//                return item.id === id;
+//            }).destroy();
+//        }
+//    },
+    render: function() {
+        // put template through handlebars
+        var source = $("#user-view-template").html();
+        var template = Handlebars.compile(source);
+        var data = this.model.toJSON();
+        // group by role
+        var grouped = _.groupBy(data, function(user) {
+            return user.role;
+        });
+        var html = template(grouped);
+        this.$el.html(html);
     }
 });
 
@@ -356,4 +450,25 @@ wss.model.ShiftList = Backbone.Collection.extend({
             return 1;
         }
     }
+});
+
+wss.model.PlannedShift = Backbone.Model.extend({
+    idAttribute: "id"
+});
+
+wss.model.PlannedShiftList = Backbone.Collection.extend({
+    model: wss.model.PlannedShift,
+    url: "/wss/plannedshifts"
+//    sync: function(method, model, options) {
+//        
+//    }
+});
+
+wss.model.User = Backbone.Model.extend({
+    idAttribute: "id"
+});
+
+wss.model.UserList = Backbone.Collection.extend({
+    model: wss.model.PlannedShift,
+    url: "wss/users"
 });

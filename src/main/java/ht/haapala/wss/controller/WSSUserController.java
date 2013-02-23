@@ -3,6 +3,7 @@ package ht.haapala.wss.controller;
 import ht.haapala.wss.data.WSSUser;
 import ht.haapala.wss.service.WSSUserService;
 import java.security.Principal;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +32,11 @@ public class WSSUserController {
             return null;
         }
         return userService.findOne(principal.getName());
+    }
+    
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public List<WSSUser> list() {
+        return userService.findAll();
     }
 }

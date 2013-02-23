@@ -10,6 +10,5 @@
 
 .show-shift-grid [class*="shift-block"] {
     text-align: center;
-    min-height: 40px;
-    line-height: 40px;
+    padding-top: 10px;
 }

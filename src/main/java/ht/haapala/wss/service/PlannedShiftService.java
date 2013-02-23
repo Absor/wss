@@ -11,10 +11,12 @@ import java.util.List;
 public interface PlannedShiftService {
     
     List<PlannedShift> findByDate(Date date);
+    
+    List<PlannedShift> findByWeek(int weekNumber);
 
     List<PlannedShift> findAll();
 
     PlannedShift save(PlannedShift shift);
 
-    void delete(Date date, Long shiftId);
+    void delete(Long plannedShiftId);
 }

@@ -68,6 +68,12 @@
             <artifactId>hibernate-validator</artifactId>
             <version>4.3.1.Final</version>
         </dependency>
+        <!-- Time utils -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.1</version>
+        </dependency>
         <!-- Persistence & database-->
         <dependency>
             <groupId>org.springframework.data</groupId>

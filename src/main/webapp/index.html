@@ -93,9 +93,9 @@
                     <div class="span2 offset10">
                         <div class="btn-toolbar pull-right">
                             <div class="btn-group">
-                                <a class="btn" href="#"><i class="icon-chevron-left"></i></a>
-                                <a class="btn" href="#">Today</i></a>
-                                <a class="btn" href="#"><i class="icon-chevron-right"></i></a>
+                                <a class="btn" href="#" id="minus-week-button"><i class="icon-chevron-left"></i></a>
+                                <a class="btn" href="#" id="today-button">Today</i></a>
+                                <a class="btn" href="#" id="plus-week-button"><i class="icon-chevron-right"></i></a>
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,10 @@
                         </div>
                         {{#each shift}}
                         <div class="row">
-                            <div class="span2 shift-block">{{this.shiftName}}</div>
+                            <div class="span2 shift-block">
+                                {{this.shiftName}}<br />
+                                {{this.startTime}} - {{this.endTime}}
+                            </div>
                         </div>
                         {{/each}}
                     </div>
@@ -139,11 +142,11 @@
                     <thead>
                         {{#each shift}}
                         <tr>
-                            <td>{{this.id}}</td>
-                            <td>{{this.shiftName}}</td>
-                            <td>{{this.startTime}}</td>
-                            <td>{{this.endTime}}</td>
-                            <td>
+                            <td class="span1">{{this.id}}</td>
+                            <td class="span6">{{this.shiftName}}</td>
+                            <td class="span2">{{this.startTime}}</td>
+                            <td class="span2">{{this.endTime}}</td>
+                            <td class="span1">
                                 <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
                                     <i class="icon-remove"></i>
                                 </button>
@@ -194,9 +197,38 @@
             </div>
         </script>
 
-        <script id="employee-view-template" type="text/html">
+        <script id="user-view-template" type="text/html">
             <div class="container">
-                emp!
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="span1">ID</th>
+                            <th class="span6">Shift name</th>
+                            <th class="span2">Start time</th>
+                            <th class="span2">End time</th>
+                            <th class="span1">
+                                <button class="btn btn-small btn-success" type="button" id="show-modal-button">
+                                    <i class="icon-plus"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        {{#each employer}}
+                        <tr>
+                            <td>{{this.username}}</td>
+                            <td>{{this.shiftName}}</td>
+                            <td>{{this.startTime}}</td>
+                            <td>{{this.endTime}}</td>
+                            <td>
+                                <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
+                                    <i class="icon-remove"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </thead>
+                </table>
             </div>
         </script>
 

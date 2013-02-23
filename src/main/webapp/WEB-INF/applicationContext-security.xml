@@ -15,9 +15,11 @@
         <sec:intercept-url pattern="/login" access="permitAll" />
         <sec:intercept-url pattern="/logout" access="permitAll" />
         <sec:intercept-url pattern="/wss/users/loggedin" access="permitAll" />
-        <!-- for authenticated users -->
+        <!-- these are secured on method level -->
+        <sec:intercept-url pattern="/wss/shifts/**" access="permitAll" />
+        <sec:intercept-url pattern="/wss/plannedshifts/**" access="permitAll" />
+        <!-- for authenticated users only -->
         <sec:intercept-url pattern="/wss/users/**" access="hasRole('employer')" />
-        <sec:intercept-url pattern="/wss/shifts/**" access="hasRole('employer')" />
         <!-- deny all rest -->
         <sec:intercept-url pattern="/**" access="denyAll" />
         
@@ -62,7 +64,4 @@
             <sec:password-encoder ref="passwordEncoder" />
         </sec:authentication-provider>
     </sec:authentication-manager>
-    
-    <!-- Access configuration with annotations -->
-    <sec:global-method-security pre-post-annotations="enabled" />
 </beans>

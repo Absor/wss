@@ -9,7 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -28,11 +30,14 @@ public class PlannedShift implements Serializable {
     private Date shiftDate;
     @OneToOne
     @JoinColumn(name = "EmployeeID")
+    @JsonIgnore
     private WSSUser employee;
     @OneToOne
     @JoinColumn(name = "ShiftID", nullable = false)
     @NotNull
     private WorkShift shift;
+    @Transient
+    private BareUser bareEmployee;
 
     public Date getShiftDate() {
         return shiftDate;
@@ -56,5 +61,21 @@ public class PlannedShift implements Serializable {
 
     public void setShift(WorkShift shift) {
         this.shift = shift;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BareUser getBareEmployee() {
+        return bareEmployee;
+    }
+
+    public void setBareEmployee(BareUser bareEmployee) {
+        this.bareEmployee = bareEmployee;
     }
 }

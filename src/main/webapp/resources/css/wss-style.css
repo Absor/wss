@@ -1,4 +1,4 @@
-.show-week-title-grid [class*="week-title"] {
+.week-title {
     background-color: #E7E7E7;
     text-align: center;
     -webkit-border-radius: 3px;
@@ -8,8 +8,18 @@
     line-height: 30px;
 }
 
-.show-shift-grid [class*="shift-block"] {
+.shift-side-block {
     text-align: center;
     padding-top: 10px;
     min-height: 50px;
+}
+
+.shift-block {
+    text-align: center;
+    padding-top: 10px;
+    min-height: 50px;
+}
+
+.shift-block:hover {
+    background-color: #F2F2F2;
 }

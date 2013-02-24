@@ -1,14 +1,14 @@
 package ht.haapala.wss.controller;
 
 import ht.haapala.wss.data.PlannedShift;
+import ht.haapala.wss.data.WSSUser;
 import ht.haapala.wss.data.Week;
+import ht.haapala.wss.data.WorkShift;
 import ht.haapala.wss.service.PlannedShiftService;
 import ht.haapala.wss.service.WSSUserService;
 import ht.haapala.wss.service.WorkShiftService;
 import java.util.Date;
 import java.util.List;
-import javax.validation.Valid;
-import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,11 +40,23 @@ public class PlannedShiftController {
     @PreAuthorize("hasRole('employer')")
     public PlannedShift create(@RequestBody Date date,
             @PathVariable String username, @PathVariable Long shiftId) {
-        PlannedShift newShift = new PlannedShift();
-        newShift.setEmployee(userService.findOne(username));
-        newShift.setShift(shiftService.findOne(shiftId));
-        newShift.setShiftDate(date);
-        return plannedShiftService.save(newShift);
+        // only allow employees
+        WSSUser employee = userService.findOne(username);
+        if (employee.getRole().equals("employer")) {
+            return null;
+        }
+
+        WorkShift workShift = shiftService.findOne(shiftId);
+        // if there is a planned with same day and shift id, just update
+        PlannedShift plannedShift = plannedShiftService.findByDateAndShift(date, workShift);
+        // otherwise create new
+        if (plannedShift == null) {
+            plannedShift = new PlannedShift();
+            plannedShift.setShift(workShift);
+            plannedShift.setShiftDate(date);
+        }
+        plannedShift.setEmployee(employee);
+        return plannedShiftService.save(plannedShift);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
@@ -54,20 +66,21 @@ public class PlannedShiftController {
         LocalDate now = LocalDate.now();
         return plannedShiftService.findByWeek(now.getWeekOfWeekyear());
     }
-    
+
     @RequestMapping(value = "{weekNumber}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
     public List<PlannedShift> listByWeek(@PathVariable int weekNumber) {
         return plannedShiftService.findByWeek(weekNumber);
     }
-    
+
     @RequestMapping(value = "weekinfo", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
     public Week weekInfo() {
         return new Week();
     }
+
     @RequestMapping(value = "weekinfo/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")

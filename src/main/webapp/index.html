@@ -100,76 +100,97 @@
                         </div>
                     </div>
                 </div>
-                <div class="row show-week-title-grid show-shift-grid">
+                <div class="row">
                     <div class="span2 hidden-phone">
                         <div class="row">
                             <div class="span2 week-title">Week {{week.weekNumber}}</div>
                         </div>
                         {{#each shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
+                            <div class="span2 shift-side-block">
                                 {{this.shiftName}}<br />
                                 {{this.startTime}} - {{this.endTime}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2">
+                    <div class="span2" data-date="{{week.monday.date.old}}">
                         <div class="row">
-                            <div class="span2 week-title">Monday {{week.monday}}</div>
+                            <div class="span2 week-title">Monday {{week.monday.date.date}}</div>
                         </div>
-                        {{#each planned.monday.shift}}
+                        {{#each week.monday.shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
-                                {{this.id}}
+                            <div class="span2 shift-block" data-shift-id="{{this.id}}" data-planned-id="{{this.planned.id}}">
+                                {{#if this.planned}}
+                                {{this.planned.bareEmployee.username}}
+                                {{else}}
+                                X
+                                {{/if}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2">
+                    <div class="span2" data-date="{{week.tuesday.date.old}}">
                         <div class="row">
-                            <div class="span2 week-title">Tuesday {{week.tuesday}}</div>
+                            <div class="span2 week-title">Tuesday {{week.tuesday.date.date}}</div>
                         </div>
-                        {{#each planned.tuesday.shift}}
+                        {{#each week.tuesday.shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
-                                {{this.id}}
+                            <div class="span2 shift-block" data-shift-id="{{this.id}}" data-planned-id="{{this.planned.id}}">
+                                {{#if this.planned}}
+                                {{this.planned.bareEmployee.username}}
+                                {{else}}
+                                X
+                                {{/if}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2">
+                    <div class="span2" data-date="{{week.wednesday.date.old}}">
                         <div class="row">
-                            <div class="span2 week-title">Wednesday {{week.wednesday}}</div>
+                            <div class="span2 week-title">Wednesday {{week.wednesday.date.date}}</div>
                         </div>
-                        {{#each planned.wednesday.shift}}
+                        {{#each week.wednesday.shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
-                                {{this.id}}
+                            <div class="span2 shift-block" data-shift-id="{{this.id}}" data-planned-id="{{this.planned.id}}">
+                                {{#if this.planned}}
+                                {{this.planned.bareEmployee.username}}
+                                {{else}}
+                                X
+                                {{/if}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2">
+                    <div class="span2" data-date="{{week.thursday.date.old}}">
                         <div class="row">
-                            <div class="span2 week-title">Thursday {{week.thursday}}</div>
+                            <div class="span2 week-title">Thursday {{week.thursday.date.date}}</div>
                         </div>
-                        {{#each planned.thursday.shift}}
+                        {{#each week.thursday.shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
-                                {{this.id}}
+                            <div class="span2 shift-block" data-shift-id="{{this.id}}" data-planned-id="{{this.planned.id}}">
+                                {{#if this.planned}}
+                                {{this.planned.bareEmployee.username}}
+                                {{else}}
+                                X
+                                {{/if}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
-                    <div class="span2">
+                    <div class="span2" data-date="{{week.friday.date.old}}">
                         <div class="row">
-                            <div class="span2 week-title">Friday {{week.friday}}</div>
+                            <div class="span2 week-title">Friday {{week.friday.date.date}}</div>
                         </div>
-                        {{#each planned.friday.shift}}
+                        {{#each week.friday.shift}}
                         <div class="row">
-                            <div class="span2 shift-block">
-                                {{this.id}}
+                            <div class="span2 shift-block" data-shift-id="{{this.id}}" data-planned-id="{{this.planned.id}}">
+                                {{#if this.planned}}
+                                {{this.planned.bareEmployee.username}}
+                                {{else}}
+                                X
+                                {{/if}}
+                                
                             </div>
                         </div>
                         {{/each}}
@@ -180,7 +201,7 @@
 
         <script id="shift-view-template" type="text/html">
             <div class="container">
-                <table class="table table-hover">
+                <table class="table">
                     <thead>
                         <tr>
                             <th class="span1">ID</th>
@@ -254,7 +275,7 @@
 
         <script id="user-view-template" type="text/html">
             <div class="container">
-                <table class="table table-hover">
+                <table class="table">
                     <thead>
                         <tr>
                             <th class="span1">ID</th>
@@ -285,6 +306,14 @@
                     </thead>
                 </table>
             </div>
+        </script>
+
+        <script id="user-selector-template" type="text/html">
+            {{#each user}}
+            <a href="#" class="btn btn-link username-button" data-username="{{this.username}}">
+                {{this.username}}
+            </a><br/>
+            {{/each}}
         </script>
 
         <!-- JQuery -->

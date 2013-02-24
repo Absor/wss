@@ -8,6 +8,10 @@ public class BareUser {
     
     private String username;
 
+    public BareUser(String username) {
+        this.username = username;
+    }
+
     public String getUsername() {
         return username;
     }

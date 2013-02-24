@@ -64,7 +64,11 @@ var wss = {
         var date = new Date(msDate);
         var day = date.getDate();
         var month = date.getMonth();
-        return day + "." + month + ".";
+        var year = date.getFullYear();
+        return {
+            date: day + "." + month + ".",
+            old: msDate
+        };
     }
 };
 
@@ -185,13 +189,19 @@ wss.view.WeekView = Backbone.View.extend({
         this.model = {
             weekdays: new wss.model.DayList(),
             shifts: new wss.model.ShiftList(),
-            plannedShifts: new wss.model.PlannedShiftList()
+            plannedShifts: new wss.model.PlannedShiftList(),
+            users: new wss.model.UserList()
         };
+        // listen to login to activate planning functionality
+        this.listenTo(wss.loggedUser, "change", this.render);
+        this.listenTo(wss.loggedUser, "change", this.checkLogin);
+        // listen to all model changes
         this.model.weekdays.on("all", this.render, this);
-        this.model.weekdays.fetch();
         this.model.shifts.on("all", this.render, this);
-        this.model.shifts.fetch();
         this.model.plannedShifts.on("all", this.render, this);
+        // fill models
+        this.model.shifts.fetch();
+        this.model.weekdays.fetch();
         this.model.plannedShifts.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
@@ -203,21 +213,39 @@ wss.view.WeekView = Backbone.View.extend({
 //        "#today-button": "today",
 //        "#plus-week-button": "plusWeek"
     },
+    checkLogin: function() {
+        if (wss.loggedUser.has("username")) {
+            this.model.users.on("all", this.render, this);
+            this.model.users.fetch();
+        } else {
+            this.model.users.off("all");
+            this.model.users.reset();
+        }
+    },
     render: function() {
         // put template through handlebars
         var source = $("#week-view-template").html();
         var template = Handlebars.compile(source);
-        var jsonData = this.model.shifts.toJSON();
 
-        var shifts = [];
+        var fullShiftView = {};
 
         var shiftsJSON = this.model.shifts.toJSON();
+
+        // format dates
+        $.each(shiftsJSON, function(index, item) {
+            item.startTime = wss.timeString(item.startTime);
+            item.endTime = wss.timeString(item.endTime);
+        });
+
         var plannedShiftsJSON = this.model.plannedShifts.toJSON();
 
         // format week days for view
         var weekdaysJSON = this.model.weekdays.toJSON();
         var weekDays;
+        // if we get the week info
         if (weekdaysJSON[0]) {
+            // make fullshift view contain each work day and each work day to
+            // contain shift infos and dates
             var content = weekdaysJSON[0];
             weekDays = this.formatWeek(content);
 
@@ -225,36 +253,108 @@ wss.view.WeekView = Backbone.View.extend({
             var i = 0;
             $.each(weekDays, function(day, item) {
                 if (day === "weekNumber") {
+                    fullShiftView[day] = item;
                     return;
                 }
-                shifts[day] = {
+                fullShiftView[day] = {
                     date: item,
-                    shift: shiftsJSON
+                    shift: []
                 };
                 i++;
             });
 
+            $.each(fullShiftView, function(day, item) {
+                if (day === "weekNumber") {
+                    return;
+                }
+                $.each(shiftsJSON, function(i, shift) {
+                    item.shift[i] = {
+                        id: shift.id
+                    };
+                });
+            });
+
+            // for each planned shift add them to view in their right place
             $.each(plannedShiftsJSON, function(i, planned) {
                 planned.shiftDate = wss.dateString(planned.shiftDate);
 
-                $.each(shifts, function(i, shift) {
-                    if(shift.date === planned.shiftDate) {
-                        // TODO
-                        console.log(shift.date);
+                $.each(fullShiftView, function(i, day) {
+                    // can be undefined (weeknumber)
+                    if (day.date) {
+                        if (day.date.date === planned.shiftDate.date) {
+                            // if date matches, match shift
+                            return $.each(day.shift, function(i, shift) {
+                                if (shift.id === planned.shift.id) {
+                                    // attach to found shift
+                                    shift.planned = planned;
+                                    return false;
+                                }
+                            });
+                        }
                     }
                 });
             });
         }
 
-        console.log(shifts);
-
-        // format dates
-        $.each(jsonData, function(index, item) {
-            item.startTime = wss.timeString(item.startTime);
-            item.endTime = wss.timeString(item.endTime);
-        });
-        var html = template({shift: jsonData, week: weekDays, planned: shifts});
+        var html = template({shift: shiftsJSON, week: fullShiftView});
         this.$el.html(html);
+
+        // check for login and activate planning if needed
+        this.addAdminElements();
+    },
+    addAdminElements: function() {
+        $(".shift-block").unbind("click");
+        // add planning events if logged in
+        if (wss.loggedUser.has("username")) {
+            // activate popovers
+            var source = $("#user-selector-template").html();
+            var template = Handlebars.compile(source);
+            var employees = [];
+            // show only employees
+            var users = this.model.users.toJSON();
+            $.each(users, function(i, user) {
+                if (user.role === "employee") {
+                    employees.push(user);
+                }
+            });
+            var html = template({user: employees});
+
+            $(".shift-block").popover({
+                html: true,
+                placement: "bottom",
+                content: html,
+                trigger: "manual"
+            });
+
+            // can't call with this. inside jQuery functions
+            var pSModel = this.model.plannedShifts;
+
+            // click on block
+            $(".shift-block").click(function(eventInfo) {
+                var clicked = eventInfo.target;
+                // for every other, hide
+                $(".shift-block").each(function(index, item) {
+                    if (item === clicked) {
+                        return;
+                    }
+                    $(item).popover("hide");
+                });
+                // toggle clicked
+                var element = $(clicked);
+                element.popover("toggle");
+
+                // block info
+                var shiftId = element.data("shift-id");
+                var date = element.parent().parent().data("date");
+
+                // add listener for popover buttons
+                $(".username-button").click(function(eventInfo) {
+                    eventInfo.preventDefault();
+                    var username = $(eventInfo.target).data("username");
+                    pSModel.create({bareEmployee: username, shift: shiftId, shiftDate: date});
+                });
+            });
+        }
     },
     formatWeek: function(content) {
         return {
@@ -520,15 +620,21 @@ wss.model.ShiftList = Backbone.Collection.extend({
 });
 
 wss.model.PlannedShift = Backbone.Model.extend({
-    idAttribute: "id"
+    idAttribute: "id",
+    // custom create functionality for planned shifts
+    sync: function(method, model, options) {
+        if (method === "create") {
+            options.url = this.url() + "/" + model.get("bareEmployee") + "/" + model.get("shift");
+            options.data = JSON.stringify(model.get("shiftDate"));
+            options.contentType = "application/json";
+        }
+        return Backbone.sync(method, model, options);
+    }
 });
 
 wss.model.PlannedShiftList = Backbone.Collection.extend({
     model: wss.model.PlannedShift,
     url: "/wss/plannedshifts"
-//    sync: function(method, model, options) {
-//        
-//    }
 });
 
 wss.model.User = Backbone.Model.extend({

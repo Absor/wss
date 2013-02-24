@@ -91,7 +91,7 @@ wss.view.LoginView = Backbone.View.extend({
         // make a request
         $.ajax({
             type: "POST",
-            url: "/login",
+            url: "login",
             data: {
                 j_username: username,
                 j_password: password
@@ -113,7 +113,7 @@ wss.view.LoginView = Backbone.View.extend({
         // make a request
         $.ajax({
             type: "GET",
-            url: "/logout",
+            url: "logout",
             success: this.logoutSuccess
         });
     },
@@ -648,7 +648,7 @@ wss.model.Week = Backbone.Model.extend({
 });
 
 wss.model.LoggedUser = Backbone.Model.extend({
-    url: "/wss/users/loggedin"
+    url: "wss/users/loggedin"
 });
 
 wss.model.WorkShift = Backbone.Model.extend({
@@ -675,7 +675,7 @@ wss.model.WorkShift = Backbone.Model.extend({
 
 wss.model.ShiftList = Backbone.Collection.extend({
     model: wss.model.WorkShift,
-    url: "/wss/shifts",
+    url: "wss/shifts",
     comparator: function(shift1, shift2) {
         // sorts by start time
         var value = wss.timeInt(shift1.get("startTime")) - wss.timeInt(shift2.get("startTime"));
@@ -696,12 +696,12 @@ wss.model.PlannedShift = Backbone.Model.extend({
     // custom create and delete functionality for planned shifts
     sync: function(method, model, options) {
         if (method === "create") {
-            options.url = "/wss/plannedshifts/" + model.get("bareEmployee") + "/" + model.get("shift");
+            options.url = "wss/plannedshifts/" + model.get("bareEmployee") + "/" + model.get("shift");
             options.data = JSON.stringify(model.get("shiftDate"));
             options.contentType = "application/json";
         }
         if (method === "delete") {
-            options.url = "/wss/plannedshifts/" + model.id;
+            options.url = "wss/plannedshifts/" + model.id;
         }
         return Backbone.sync(method, model, options);
     }
@@ -714,14 +714,14 @@ wss.model.PlannedShiftList = Backbone.Collection.extend({
     },
     setUrl: function() {
         if (wss.week.year && wss.week.week) {
-            this.url = "/wss/plannedshifts/" + wss.week.year + "/" + wss.week.week;
+            this.url = "wss/plannedshifts/" + wss.week.year + "/" + wss.week.week;
         } else {
-            this.url = "/wss/plannedshifts";
+            this.url = "wss/plannedshifts";
         }
         this.fetch();
     },
     model: wss.model.PlannedShift,
-    url: "/wss/plannedshifts"
+    url: "wss/plannedshifts"
 });
 
 wss.model.User = Backbone.Model.extend({

@@ -16,25 +16,28 @@ import org.joda.time.LocalDate;
  */
 public class Week {
     
+    private int year;
     private int weekNumber;
     private List<Date> days;
 
     public Week() {
-        days = new ArrayList<Date>();
+        this.days = new ArrayList<Date>();
         LocalDate now = LocalDate.now().withDayOfWeek(DateTimeConstants.MONDAY);
-        weekNumber = now.getWeekOfWeekyear();
+        this.weekNumber = now.getWeekOfWeekyear();
+        this.year = now.getYear();
         for (int i = 0; i < 5; i++) {
-            days.add(now.toDate());
+            this.days.add(now.toDate());
             now = now.plusDays(1);
         }
     }
 
-    public Week(int weekNumber) {
-        days = new ArrayList<Date>();
-        LocalDate now = LocalDate.now().withWeekOfWeekyear(weekNumber).withDayOfWeek(DateTimeConstants.MONDAY);
-        weekNumber = now.getWeekOfWeekyear();
+    public Week(int year, int weekNumber) {
+        this.days = new ArrayList<Date>();
+        LocalDate now = LocalDate.now().withYear(year).withWeekOfWeekyear(weekNumber).withDayOfWeek(DateTimeConstants.MONDAY);
+        this.weekNumber = now.getWeekOfWeekyear();
+        this.year = now.getYear();
         for (int i = 0; i < 5; i++) {
-            days.add(now.toDate());
+            this.days.add(now.toDate());
             now = now.plusDays(1);
         }
     }
@@ -53,5 +56,13 @@ public class Week {
 
     public void setWeekNumber(int weekNumber) {
         this.weekNumber = weekNumber;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

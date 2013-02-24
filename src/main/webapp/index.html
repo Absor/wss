@@ -190,7 +190,7 @@
                                 {{else}}
                                 X
                                 {{/if}}
-                                
+
                             </div>
                         </div>
                         {{/each}}
@@ -275,13 +275,13 @@
 
         <script id="user-view-template" type="text/html">
             <div class="container">
+                <h4>Employers</h4>
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="span1">ID</th>
-                            <th class="span6">Shift name</th>
-                            <th class="span2">Start time</th>
-                            <th class="span2">End time</th>
+                            <th class="span4">Username</th>
+                            <th class="span4">E-Mail</th>
+                            <th class="span3">Role</th>
                             <th class="span1">
                                 <button class="btn btn-small btn-success" type="button" id="show-modal-button">
                                     <i class="icon-plus"></i>
@@ -292,11 +292,39 @@
                     <thead>
                         {{#each employer}}
                         <tr>
-                            <td>{{this.username}}</td>
-                            <td>{{this.shiftName}}</td>
-                            <td>{{this.startTime}}</td>
-                            <td>{{this.endTime}}</td>
-                            <td>
+                            <td class="span4">{{this.username}}</td>
+                            <td class="span4">{{this.email}}</td>
+                            <td class="span3">{{this.role}}</td>
+                            <td class="span1">
+                                <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
+                                    <i class="icon-remove"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </thead>
+                </table>
+                <h4>Employees</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="span4">Username</th>
+                            <th class="span4">E-Mail</th>
+                            <th class="span3">Role</th>
+                            <th class="span1">
+                                <button class="btn btn-small btn-success" type="button" id="show-modal-button">
+                                    <i class="icon-plus"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        {{#each employee}}
+                        <tr>
+                            <td class="span4">{{this.username}}</td>
+                            <td class="span4">{{this.email}}</td>
+                            <td class="span3">{{this.role}}</td>
+                            <td class="span1">
                                 <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
                                     <i class="icon-remove"></i>
                                 </button>
@@ -306,9 +334,31 @@
                     </thead>
                 </table>
             </div>
+
+            <div class="modal hide fade" id="user-add-modal">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>Add new user</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="control-group" id="user-name-control">
+                            <label class="control-label" for="shift-name-field">Shift name</label>
+                            <div class="controls">
+                                <input type="text" id="user-name-field" placeholder="Shift name">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn" id="close-modal-button">Close</a>
+                    <a href="#" class="btn btn-primary" id="add-shift-button">Add user</a>
+                </div>
+            </div>
         </script>
 
         <script id="user-selector-template" type="text/html">
+            <a href="#" class="btn btn-link" id="delete-planned-shift-button">Delete</a><br/>
             {{#each user}}
             <a href="#" class="btn btn-link username-button" data-username="{{this.username}}">
                 {{this.username}}

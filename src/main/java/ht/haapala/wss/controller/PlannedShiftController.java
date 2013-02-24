@@ -64,28 +64,14 @@ public class PlannedShiftController {
     @PreAuthorize("permitAll")
     public List<PlannedShift> list() {
         LocalDate now = LocalDate.now();
-        return plannedShiftService.findByWeek(now.getWeekOfWeekyear());
+        return plannedShiftService.findByWeek(now.getYear(), now.getWeekOfWeekyear());
     }
 
-    @RequestMapping(value = "{weekNumber}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "{year}/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
-    public List<PlannedShift> listByWeek(@PathVariable int weekNumber) {
-        return plannedShiftService.findByWeek(weekNumber);
-    }
-
-    @RequestMapping(value = "weekinfo", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @PreAuthorize("permitAll")
-    public Week weekInfo() {
-        return new Week();
-    }
-
-    @RequestMapping(value = "weekinfo/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @PreAuthorize("permitAll")
-    public Week weekInfoByNumber(@PathVariable int weekNumber) {
-        return new Week(weekNumber);
+    public List<PlannedShift> listByWeek(@PathVariable int year, @PathVariable int weekNumber) {
+        return plannedShiftService.findByWeek(year, weekNumber);
     }
 
     @RequestMapping(value = "{plannedShiftId}", method = RequestMethod.DELETE)
@@ -93,5 +79,20 @@ public class PlannedShiftController {
     @PreAuthorize("hasRole('employer')")
     public void delete(@PathVariable Long plannedShiftId) {
         plannedShiftService.delete(plannedShiftId);
+    }
+    
+    // Week info
+    @RequestMapping(value = "weekinfo", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @PreAuthorize("permitAll")
+    public Week weekInfo() {
+        return new Week();
+    }
+
+    @RequestMapping(value = "weekinfo/{year}/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @PreAuthorize("permitAll")
+    public Week weekInfoByNumber(@PathVariable int year, @PathVariable int weekNumber) {
+        return new Week(year, weekNumber);
     }
 }

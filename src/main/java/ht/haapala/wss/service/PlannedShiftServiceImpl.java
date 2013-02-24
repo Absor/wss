@@ -27,8 +27,8 @@ public class PlannedShiftServiceImpl implements PlannedShiftService {
     }
 
     @Override
-    public List<PlannedShift> findByWeek(int weekNumber) {
-        LocalDate thisMonday = LocalDate.now().withWeekOfWeekyear(weekNumber).withDayOfWeek(DateTimeConstants.MONDAY);
+    public List<PlannedShift> findByWeek(int year, int weekNumber) {
+        LocalDate thisMonday = LocalDate.now().withYear(year).withWeekOfWeekyear(weekNumber).withDayOfWeek(DateTimeConstants.MONDAY);
         LocalDate thisSunday = thisMonday.withDayOfWeek(DateTimeConstants.SUNDAY);
         List<PlannedShift> findByShiftDateBetween = plannedShiftRepository.findByShiftDateBetween(thisMonday.toDate(), thisSunday.toDate());
         for (PlannedShift shift : findByShiftDateBetween) {

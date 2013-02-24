@@ -23,7 +23,6 @@ public class WSSUser implements Serializable {
     private String username;
     @Column(name = "Password", nullable = false)
     @JsonIgnore
-    @NotBlank
     private String password;
     @Column(name = "Enabled", nullable = false)
     @NotNull

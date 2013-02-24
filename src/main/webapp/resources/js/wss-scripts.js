@@ -1,36 +1,25 @@
 $(document).ready(function() {
     // logged in user
-    wss.loggedUser = new wss.model.LoggedUser({});
+    wss.loggedUser = new wss.model.LoggedUser();
+    wss.loggedUser.fetch();
+    // week info
+    wss.week = new wss.model.Week();
+    wss.week.fetch();
     // add navigation view
     new wss.view.NavigationView();
     // add login/logout view
     new wss.view.LoginView();
     // start with week view
     new wss.view.WeekView();
-
-    // update logged in user information
-    wss.updateUser();
 });
 
 // base container
 var wss = {
+    loggedUser: null,
+    week: null,
     view: {},
     model: {},
-    loggedUser: null,
-    updateUser: function() {
-        $.ajax({
-            type: "GET",
-            url: "/wss/users/loggedin",
-            success: function(data) {
-                // if we get logged user info we set it to model, otherwise unset
-                if (data) {
-                    wss.loggedUser.set(data);
-                } else {
-                    wss.loggedUser.unset("username");
-                }
-            }
-        });
-    },
+    // helper functions
     alertHtml: function(alertText) {
         var source = $("#alert-template").html();
         var template = Handlebars.compile(source);
@@ -64,6 +53,8 @@ var wss = {
         var date = new Date(msDate);
         var day = date.getDate();
         var month = date.getMonth();
+        // months start from 0
+        month++;
         var year = date.getFullYear();
         return {
             date: day + "." + month + ".",
@@ -107,7 +98,7 @@ wss.view.LoginView = Backbone.View.extend({
     checkLogin: function(data) {
         if (data === "login_success") {
             $("#alert-view").html("");
-            wss.updateUser();
+            wss.loggedUser.fetch();
         } else {
             $("#alert-view").html(wss.alertHtml("Wrong username or password."));
         }
@@ -119,8 +110,12 @@ wss.view.LoginView = Backbone.View.extend({
         $.ajax({
             type: "GET",
             url: "/logout",
-            success: wss.updateUser
+            success: this.logoutSuccess
         });
+    },
+    logoutSuccess: function() {
+        // on successful logout clear user info
+        wss.loggedUser.clear();
     },
     render: function() {
         // put template through handlebars
@@ -187,7 +182,6 @@ wss.view.WeekView = Backbone.View.extend({
     initialize: function() {
         // set and update model
         this.model = {
-            weekdays: new wss.model.DayList(),
             shifts: new wss.model.ShiftList(),
             plannedShifts: new wss.model.PlannedShiftList(),
             users: new wss.model.UserList()
@@ -195,13 +189,13 @@ wss.view.WeekView = Backbone.View.extend({
         // listen to login to activate planning functionality
         this.listenTo(wss.loggedUser, "change", this.render);
         this.listenTo(wss.loggedUser, "change", this.checkLogin);
+        // listen to week changes
+        this.listenTo(wss.week, "change", this.render);
         // listen to all model changes
-        this.model.weekdays.on("all", this.render, this);
         this.model.shifts.on("all", this.render, this);
         this.model.plannedShifts.on("all", this.render, this);
         // fill models
         this.model.shifts.fetch();
-        this.model.weekdays.fetch();
         this.model.plannedShifts.fetch();
         // unbind clicks from view, otherwise they keep on stacking!
         this.$el.unbind("click");
@@ -209,9 +203,21 @@ wss.view.WeekView = Backbone.View.extend({
         this.render();
     },
     events: {
-//        "#minus-week-button": "minusWeek",
-//        "#today-button": "today",
-//        "#plus-week-button": "plusWeek"
+        "click #minus-week-button": "minusWeek",
+        "click #today-button": "today",
+        "click #plus-week-button": "plusWeek"
+    },
+    minusWeek: function(eventInfo) {
+        eventInfo.preventDefault();
+        wss.week.last();
+    },
+    today: function(eventInfo) {
+        eventInfo.preventDefault();
+        wss.week.thisWeek();
+    },
+    plusWeek: function(eventInfo) {
+        eventInfo.preventDefault();
+        wss.week.next();
     },
     checkLogin: function() {
         if (wss.loggedUser.has("username")) {
@@ -240,14 +246,12 @@ wss.view.WeekView = Backbone.View.extend({
         var plannedShiftsJSON = this.model.plannedShifts.toJSON();
 
         // format week days for view
-        var weekdaysJSON = this.model.weekdays.toJSON();
-        var weekDays;
+        var weekdaysJSON = wss.week.toJSON();
         // if we get the week info
-        if (weekdaysJSON[0]) {
+        if (weekdaysJSON.weekNumber) {
             // make fullshift view contain each work day and each work day to
             // contain shift infos and dates
-            var content = weekdaysJSON[0];
-            weekDays = this.formatWeek(content);
+            var weekDays = this.formatWeek(weekdaysJSON);
 
             // add to shifts too
             var i = 0;
@@ -346,8 +350,18 @@ wss.view.WeekView = Backbone.View.extend({
                 // block info
                 var shiftId = element.data("shift-id");
                 var date = element.parent().parent().data("date");
+                var plannedId = element.data("planned-id");
 
                 // add listener for popover buttons
+                $("#delete-planned-shift-button").click(function(eventInfo) {
+                    eventInfo.preventDefault();
+                    if (plannedId !== "") {
+                        // destroy the planned shift with matching id
+                        pSModel.find(function(shift) {
+                            return shift.id === plannedId;
+                        }).destroy();
+                    }
+                });
                 $(".username-button").click(function(eventInfo) {
                     eventInfo.preventDefault();
                     var username = $(eventInfo.target).data("username");
@@ -389,10 +403,7 @@ wss.view.ShiftView = Backbone.View.extend({
     },
     showModal: function(eventInfo) {
         eventInfo.preventDefault();
-        $('#shift-add-modal').modal({
-            backdrop: "static",
-            keyboard: false
-        });
+        $('#shift-add-modal').modal("show");
     },
     closeModal: function(eventInfo) {
         eventInfo.preventDefault();
@@ -471,6 +482,12 @@ wss.view.ShiftView = Backbone.View.extend({
         };
         $("#start-timepicker").datetimepicker(pickerSettings);
         $("#end-timepicker").datetimepicker(pickerSettings);
+        // set up modal
+        $('#shift-add-modal').modal({
+            backdrop: "static",
+            keyboard: false,
+            show: false
+        });
     }
 });
 
@@ -495,72 +512,59 @@ wss.view.UserView = Backbone.View.extend({
     },
     showModal: function(eventInfo) {
         eventInfo.preventDefault();
-        $('#shift-add-modal').modal({
-            backdrop: "static",
-            keyboard: false
-        });
+        $('#shift-add-modal').modal("show");
     },
-//    closeModal: function(eventInfo) {
-//        eventInfo.preventDefault();
-//        $('#shift-add-modal').modal('hide');
-//    },
-//    addShift: function(eventInfo) {
-//        eventInfo.preventDefault();
-//        // remove errors if any
-//        $("#shift-name-control").removeClass("error");
-//        $("#start-time-control").removeClass("error");
-//        $("#end-time-control").removeClass("error");
-//        // get form contents and check for errors
-//        var shiftName = $("#shift-name-field").val();
-//        // change times to dates
-//        var startTime = this.timeStringToDateValue($("#start-time-field").val());
-//        var endTime = this.timeStringToDateValue($("#end-time-field").val());
-//        // new model
-//        var shift = new wss.model.WorkShift({
-//            shiftName: shiftName,
-//            startTime: startTime,
-//            endTime: endTime
-//        });
-//        // check for validity
-//        var error = shift.validate();
-//        if (error) {
-//            if (error.field === "shiftName") {
-//                $("#shift-name-control").addClass("error");
-//            } else if (error.field === "startTime") {
-//                $("#start-time-control").addClass("error");
-//            } else if (error.field === "endTime") {
-//                $("#end-time-control").addClass("error");
-//            }
-//            return;
-//        }
-//        // close modal
-//        $('#shift-add-modal').modal('hide');
-//        // add to model
-//        this.model.create(shift);
-//    },
-//    timeStringToDateValue: function(timeString) {
-//        var time = new Date();
-//        time.setHours(parseInt(timeString.substring(0, 2), 10));
-//        time.setMinutes(parseInt(timeString.substring(3, 5), 10));
-//        time.setSeconds(0);
-//        return time.valueOf();
-//    },
-//    deleteShift: function(eventInfo) {
-//        eventInfo.preventDefault();
-//        var id = $(eventInfo.target).data("id");
-//        if (id) {
-//            this.model.find(function(item) {
-//                return item.id === id;
-//            }).destroy();
-//        }
-//    },
+    closeModal: function(eventInfo) {
+        eventInfo.preventDefault();
+        $('#shift-add-modal').modal('hide');
+    },
+    addShift: function(eventInfo) {
+        eventInfo.preventDefault();
+        // remove errors if any
+        $("#user-name-control").removeClass("error");
+        // get form contents and check for errors
+        var username = $("#user-name-field").val();
+        // new model
+        var shift = new wss.model.WorkShift({
+            username: username
+        });
+        // check for validity
+        var error = shift.validate();
+        if (error) {
+            if (error.field === "shiftName") {
+                $("#shift-name-control").addClass("error");
+            } else if (error.field === "startTime") {
+                $("#start-time-control").addClass("error");
+            } else if (error.field === "endTime") {
+                $("#end-time-control").addClass("error");
+            }
+            return;
+        }
+        // close modal
+        $('#shift-add-modal').modal('hide');
+        // add to model
+        this.model.create(shift);
+    },
+    deleteUser: function(eventInfo) {
+        eventInfo.preventDefault();
+        var id = $(eventInfo.target).data("id");
+        if (id) {
+            this.model.find(function(item) {
+                return item.id === id;
+            }).destroy();
+        }
+    },
     render: function() {
         // put template through handlebars
         var source = $("#user-view-template").html();
         var template = Handlebars.compile(source);
         var data = this.model.toJSON();
+        // filter away admin
+        var filtered = _.filter(data, function(user) {
+            return user.username !== "admin";
+        });
         // group by role
-        var grouped = _.groupBy(data, function(user) {
+        var grouped = _.groupBy(filtered, function(user) {
             return user.role;
         });
         var html = template(grouped);
@@ -570,14 +574,54 @@ wss.view.UserView = Backbone.View.extend({
 
 // MODELS
 
-wss.model.Day = Backbone.Model.extend({});
-
-wss.model.DayList = Backbone.Collection.extend({
-    model: wss.model.Day,
-    url: "wss/plannedshifts/weekinfo"
+wss.model.Week = Backbone.Model.extend({
+    initialize: function() {
+        this.on("change", this.checkYearAndWeek, this);
+    },
+    week: null,
+    year: null,
+    url: "wss/plannedshifts/weekinfo",
+    last: function() {
+        this.checkYearAndWeek();
+        if (this.week && this.year) {
+            this.week--;
+            if (this.week < 1) {
+                this.week = 52;
+                this.year--;
+            }
+            this.setUrlandFetch();
+        }
+    },
+    thisWeek: function() {
+        this.week = null;
+        this.year = null;
+        this.url = "wss/plannedshifts/weekinfo";
+        this.fetch();
+    },
+    next: function() {
+        this.checkYearAndWeek();
+        if (this.week && this.year) {
+            this.week++;
+            if (this.week > 52) {
+                this.week = 1;
+                this.year++;
+            }
+            this.setUrlandFetch();
+        }
+    },
+    checkYearAndWeek: function() {
+        this.week = this.attributes.weekNumber;
+        this.year = this.attributes.year;
+    },
+    setUrlandFetch: function() {
+        this.url = "wss/plannedshifts/weekinfo/" + this.year + "/" + this.week;
+        this.fetch();
+    }
 });
 
-wss.model.LoggedUser = Backbone.Model.extend({});
+wss.model.LoggedUser = Backbone.Model.extend({
+    url: "/wss/users/loggedin"
+});
 
 wss.model.WorkShift = Backbone.Model.extend({
     idAttribute: "id",
@@ -621,18 +665,33 @@ wss.model.ShiftList = Backbone.Collection.extend({
 
 wss.model.PlannedShift = Backbone.Model.extend({
     idAttribute: "id",
-    // custom create functionality for planned shifts
+    // custom create and delete functionality for planned shifts
     sync: function(method, model, options) {
         if (method === "create") {
-            options.url = this.url() + "/" + model.get("bareEmployee") + "/" + model.get("shift");
+            options.url = "/wss/plannedshifts/" + model.get("bareEmployee") + "/" + model.get("shift");
             options.data = JSON.stringify(model.get("shiftDate"));
             options.contentType = "application/json";
+        }
+        if (method === "delete") {
+            options.url = "/wss/plannedshifts/" + model.id;
         }
         return Backbone.sync(method, model, options);
     }
 });
 
 wss.model.PlannedShiftList = Backbone.Collection.extend({
+    initialize: function() {
+        // on week changes set url
+        this.listenTo(wss.week, "change", this.setUrl);
+    },
+    setUrl: function() {
+        if (wss.week.year && wss.week.week) {
+            this.url = "/wss/plannedshifts/" + wss.week.year + "/" + wss.week.week;
+        } else {
+            this.url = "/wss/plannedshifts";
+        }
+        this.fetch();
+    },
     model: wss.model.PlannedShift,
     url: "/wss/plannedshifts"
 });

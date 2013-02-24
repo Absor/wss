@@ -15,7 +15,7 @@ public interface PlannedShiftService {
     
     List<PlannedShift> findByDate(Date date);
     
-    List<PlannedShift> findByWeek(int weekNumber);
+    List<PlannedShift> findByWeek(int year, int weekNumber);
 
     List<PlannedShift> findAll();
 

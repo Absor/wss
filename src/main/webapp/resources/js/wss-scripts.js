@@ -760,11 +760,6 @@ wss.model.User = Backbone.Model.extend({
         if (attrsToUse.enabled !== true && attrsToUse.enabled !== false) {
             return {field: "enabled", error: "Invalid role."};
         }
-    },
-    sync: function(method, model, options) {
-        console.log(method);
-    
-        Backbone.sync(method, model, options);
     }
 });
 

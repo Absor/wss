@@ -48,8 +48,6 @@
                         {{#if employee}}
                         <li class="divider"></li>
                         <li class="nav-header">Employee</li>
-                        <li><a href="#">Separated link</a></li>
-                        <li><a href="#">One more separated link</a></li>
                         {{/if}}
                         {{#if employer}}
                         <li class="divider"></li>
@@ -279,9 +277,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="span4">Username</th>
-                            <th class="span4">E-Mail</th>
+                            <th class="span3">Username</th>
+                            <th class="span3">EMail</th>
                             <th class="span3">Role</th>
+                            <th class="span2">Enabled</th>
                             <th class="span1">
                                 <button class="btn btn-small btn-success" type="button" id="show-modal-button">
                                     <i class="icon-plus"></i>
@@ -292,11 +291,12 @@
                     <thead>
                         {{#each employer}}
                         <tr>
-                            <td class="span4">{{this.username}}</td>
-                            <td class="span4">{{this.email}}</td>
+                            <td class="span3">{{this.username}}</td>
+                            <td class="span3">{{this.email}}</td>
                             <td class="span3">{{this.role}}</td>
+                            <th class="span2">{{this.enabled}}</th>
                             <td class="span1">
-                                <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
+                                <button class="btn btn-small btn-danger" data-username="{{this.username}}" type="button">
                                     <i class="icon-remove"></i>
                                 </button>
                             </td>
@@ -308,24 +308,22 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th class="span4">Username</th>
-                            <th class="span4">E-Mail</th>
+                            <th class="span3">Username</th>
+                            <th class="span3">EMail</th>
                             <th class="span3">Role</th>
-                            <th class="span1">
-                                <button class="btn btn-small btn-success" type="button" id="show-modal-button">
-                                    <i class="icon-plus"></i>
-                                </button>
-                            </th>
+                            <th class="span2">Enabled</th>
+                            <th class="span1"></th>
                         </tr>
                     </thead>
                     <thead>
                         {{#each employee}}
                         <tr>
-                            <td class="span4">{{this.username}}</td>
-                            <td class="span4">{{this.email}}</td>
+                            <td class="span3">{{this.username}}</td>
+                            <td class="span3">{{this.email}}</td>
                             <td class="span3">{{this.role}}</td>
+                            <th class="span2">{{this.enabled}}</th>
                             <td class="span1">
-                                <button class="btn btn-small btn-danger" data-id="{{this.id}}" type="button">
+                                <button class="btn btn-small btn-danger" data-username="{{this.username}}" type="button">
                                     <i class="icon-remove"></i>
                                 </button>
                             </td>
@@ -343,16 +341,45 @@
                 <div class="modal-body">
                     <form class="form-horizontal">
                         <div class="control-group" id="user-name-control">
-                            <label class="control-label" for="shift-name-field">Shift name</label>
+                            <label class="control-label" for="user-name-field">Username</label>
                             <div class="controls">
-                                <input type="text" id="user-name-field" placeholder="Shift name">
+                                <input type="text" id="user-name-field" placeholder="Username">
+                            </div>
+                        </div>
+                        <div class="control-group" id="password-control">
+                            <label class="control-label" for="password-field">Password</label>
+                            <div class="controls">
+                                <input type="password" id="password-field" placeholder="Password">
+                            </div>
+                        </div>
+                        <div class="control-group" id="email-control">
+                            <label class="control-label" for="email-field">Email</label>
+                            <div class="controls">
+                                <input type="text" id="email-field" placeholder="EMail">
+                            </div>
+                        </div>
+                        <div class="control-group" id="role-control">
+                            <label class="control-label" for="role-select">Role</label>
+                            <div class="controls">
+                                <select id="role-select">
+                                    <option>Employee</option>
+                                    <option>Employer</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group" id="enabled-control">
+                            <label class="control-label" for="enabled-checkbox">Enabled</label>
+                            <div class="controls">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" id="enabled-checkbox" value="enabled" checked="checked">
+                                </label>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn" id="close-modal-button">Close</a>
-                    <a href="#" class="btn btn-primary" id="add-shift-button">Add user</a>
+                    <a href="#" class="btn btn-primary" id="add-user-button">Add user</a>
                 </div>
             </div>
         </script>

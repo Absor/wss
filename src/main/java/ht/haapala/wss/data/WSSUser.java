@@ -8,6 +8,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -20,6 +21,7 @@ public class WSSUser implements Serializable {
 
     @Id
     @Column(name = "Username", nullable = false)
+    @Length(min = 3)
     private String username;
     @Column(name = "Password", nullable = false)
     @JsonIgnore
@@ -33,7 +35,9 @@ public class WSSUser implements Serializable {
     @Column(name = "Email")
     private String email;
     @Transient
-    private boolean changingPassword;
+    private String barePassword;
+    @Transient
+    private String id;
 
     public String getUsername() {
         return username;
@@ -75,11 +79,19 @@ public class WSSUser implements Serializable {
         this.email = email;
     }
 
-    public boolean isChangingPassword() {
-        return changingPassword;
+    public String getBarePassword() {
+        return barePassword;
     }
 
-    public void setChangingPassword(boolean changingPassword) {
-        this.changingPassword = changingPassword;
+    public void setBarePassword(String barePassword) {
+        this.barePassword = barePassword;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

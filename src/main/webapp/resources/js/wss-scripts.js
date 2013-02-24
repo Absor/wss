@@ -11,10 +11,14 @@ $(document).ready(function() {
     new wss.view.LoginView();
     // start with week view
     new wss.view.WeekView();
+
+    // email checking
+    wss.emailRegExp = new RegExp("[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}", "i");
 });
 
 // base container
 var wss = {
+    emailRegExp: null,
     loggedUser: null,
     week: null,
     view: {},
@@ -201,6 +205,7 @@ wss.view.WeekView = Backbone.View.extend({
         this.$el.unbind("click");
         // show this view
         this.render();
+        this.checkLogin();
     },
     events: {
         "click #minus-week-button": "minusWeek",
@@ -220,7 +225,7 @@ wss.view.WeekView = Backbone.View.extend({
         wss.week.next();
     },
     checkLogin: function() {
-        if (wss.loggedUser.has("username")) {
+        if (wss.loggedUser.get("role") === "employer") {
             this.model.users.on("all", this.render, this);
             this.model.users.fetch();
         } else {
@@ -309,7 +314,7 @@ wss.view.WeekView = Backbone.View.extend({
     addAdminElements: function() {
         $(".shift-block").unbind("click");
         // add planning events if logged in
-        if (wss.loggedUser.has("username")) {
+        if (wss.loggedUser.get("role") === "employer") {
             // activate popovers
             var source = $("#user-selector-template").html();
             var template = Handlebars.compile(source);
@@ -455,7 +460,7 @@ wss.view.ShiftView = Backbone.View.extend({
         var id = $(eventInfo.target).data("id");
         if (id) {
             this.model.find(function(item) {
-                return item.id === id;
+                return item.get("id") === id;
             }).destroy();
         }
     },
@@ -507,50 +512,66 @@ wss.view.UserView = Backbone.View.extend({
     events: {
         "click #show-modal-button": "showModal",
         "click #close-modal-button": "closeModal",
-        "click #add-shift-button": "addShift",
-        "click tr td button": "deleteShift"
+        "click #add-user-button": "addUser",
+        "click tr td button": "deleteUser"
     },
     showModal: function(eventInfo) {
         eventInfo.preventDefault();
-        $('#shift-add-modal').modal("show");
+        $('#user-add-modal').modal("show");
     },
     closeModal: function(eventInfo) {
         eventInfo.preventDefault();
-        $('#shift-add-modal').modal('hide');
+        $('#user-add-modal').modal('hide');
     },
-    addShift: function(eventInfo) {
+    addUser: function(eventInfo) {
         eventInfo.preventDefault();
         // remove errors if any
         $("#user-name-control").removeClass("error");
+        $("#password-control").removeClass("error");
+        $("#email-control").removeClass("error");
+        $("#role-control").removeClass("error");
+        $("#enabled-control").removeClass("error");
         // get form contents and check for errors
         var username = $("#user-name-field").val();
+        var password = $("#password-field").val();
+        var email = $("#email-field").val();
+        var role = $("#role-select").val();
+        var enabled = $("#enabled-checkbox").is(':checked');
         // new model
-        var shift = new wss.model.WorkShift({
-            username: username
+        var user = new wss.model.User({
+            username: username,
+            barePassword: password,
+            email: email,
+            role: role.toLowerCase(),
+            enabled: enabled
         });
         // check for validity
-        var error = shift.validate();
+        var error = user.validate();
         if (error) {
-            if (error.field === "shiftName") {
-                $("#shift-name-control").addClass("error");
-            } else if (error.field === "startTime") {
-                $("#start-time-control").addClass("error");
-            } else if (error.field === "endTime") {
-                $("#end-time-control").addClass("error");
+            if (error.field === "username") {
+                $("#user-name-control").addClass("error");
+            } else if (error.field === "password") {
+                $("#password-control").addClass("error");
+            } else if (error.field === "email") {
+                $("#email-control").addClass("error");
+            } else if (error.field === "role") {
+                $("#role-control").addClass("error");
+            } else if (error.field === "enabled") {
+                $("#enabled-control").addClass("error");
             }
             return;
         }
         // close modal
-        $('#shift-add-modal').modal('hide');
+        $('#user-add-modal').modal('hide');
         // add to model
-        this.model.create(shift);
+        this.model.create(user);
     },
     deleteUser: function(eventInfo) {
         eventInfo.preventDefault();
-        var id = $(eventInfo.target).data("id");
-        if (id) {
+        var username = $(eventInfo.target).data("username");
+        if (username) {
             this.model.find(function(item) {
-                return item.id === id;
+                return item.get("username") === username;
             }).destroy();
         }
     },
@@ -569,6 +590,13 @@ wss.view.UserView = Backbone.View.extend({
         });
         var html = template(grouped);
         this.$el.html(html);
+
+        // set up modal
+        $('#user-add-modal').modal({
+            backdrop: "static",
+            keyboard: false,
+            show: false
+        });
     }
 });
 
@@ -697,10 +725,50 @@ wss.model.PlannedShiftList = Backbone.Collection.extend({
 });
 
 wss.model.User = Backbone.Model.extend({
-    idAttribute: "id"
+    idAttribute: "id",
+    validate: function(attrs) {
+        var attrsToUse = attrs;
+        if (!attrsToUse) {
+            attrsToUse = this.attributes;
+        }
+        // username
+        if (!attrsToUse.username) {
+            return {field: "username", error: "Invalid username."};
+        }
+        if (attrsToUse.username && attrsToUse.username.length < 3) {
+            return {field: "username", error: "Username too short."};
+        }
+        // password
+        if (!attrsToUse.barePassword) {
+            return {field: "password", error: "Invalid password."};
+        }
+        if (attrsToUse.barePassword && attrsToUse.barePassword.length < 8) {
+            return {field: "password", error: "Password too short."};
+        }
+        // email
+        if (!attrsToUse.email) {
+            return {field: "email", error: "Invalid email."};
+        }
+        if (!wss.emailRegExp.test(attrsToUse.email)) {
+            return {field: "email", error: "Email is not valid."};
+        }
+        // role
+        if (!attrsToUse.role || (attrsToUse.role !== "employee" && attrsToUse.role !== "employer")) {
+            return {field: "role", error: "Invalid role."};
+        }
+        // role
+        if (attrsToUse.enabled !== true && attrsToUse.enabled !== false) {
+            return {field: "enabled", error: "Invalid role."};
+        }
+    },
+    sync: function(method, model, options) {
+        console.log(method);
+    
+        Backbone.sync(method, model, options);
+    }
 });
 
 wss.model.UserList = Backbone.Collection.extend({
-    model: wss.model.PlannedShift,
+    model: wss.model.User,
     url: "wss/users"
 });

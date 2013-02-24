@@ -1,6 +1,8 @@
 package ht.haapala.wss.service;
 
+import ht.haapala.wss.data.PlannedShift;
 import ht.haapala.wss.data.WSSUser;
+import ht.haapala.wss.repository.PlannedShiftRepository;
 import ht.haapala.wss.repository.WSSUserRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,28 +14,53 @@ public class WSSUserServiceImpl implements WSSUserService {
 
     @Autowired
     WSSUserRepository userRepository;
+    @Autowired
+    PlannedShiftRepository plannedShiftRepository;
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public WSSUser findOne(String username) {
-        return userRepository.findOne(username);
+        WSSUser findOne = userRepository.findOne(username);
+        if (findOne != null) {
+            findOne.setId(findOne.getUsername());
+        }
+        return findOne;
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<WSSUser> findAll() {
-        return userRepository.findAll();
+        List<WSSUser> findAll = userRepository.findAll();
+        if (findAll != null) {
+            for (WSSUser user : findAll) {
+                user.setId(user.getUsername());
+            }
+        }
+        return findAll;
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public WSSUser save(WSSUser user) {
-        return userRepository.save(user);
+        WSSUser save = userRepository.save(user);
+        if (save != null) {
+            save.setId(save.getUsername());
+        }
+        return save;
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void delete(String username) {
-        userRepository.delete(username);
+        WSSUser user = userRepository.findOne(username);
+        if (user != null) {
+            List<PlannedShift> shifts = plannedShiftRepository.findByEmployee(user);
+            if (shifts != null) {
+                for (PlannedShift shift : shifts) {
+                    plannedShiftRepository.delete(shift.getId());
+                }
+            }
+            userRepository.delete(username);
+        }
     }
 }

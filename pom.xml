@@ -15,6 +15,8 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+        <jetty.maven.plugin.version>8.1.5.v20120716</jetty.maven.plugin.version>
+        <jetty.port>8090</jetty.port>
     </properties>
 
     <dependencies>
@@ -145,6 +147,18 @@
             <version>${spring.framework.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.jayway.restassured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>1.7.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -194,6 +208,71 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+
+                <version>${jetty.maven.plugin.version}</version>
+
+                <configuration>
+
+                    <scanIntervalSeconds>5</scanIntervalSeconds>
+                    <stopPort>9966</stopPort>
+                    <stopKey>jetty-stop</stopKey>
+
+                    <systemProperties>
+                        <systemProperty>
+                            <name>jetty.port</name>
+                            <value>${jetty.port}</value>
+                        </systemProperty>
+                    </systemProperties>
+
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">-->
+                            <!-- let users specify port in maven config -->
+                            <!--<port>${jetty.port}</port>
+                        </connector>
+                    </connectors>
+                </configuration>-->
+
+                <!-- start jetty before running tests -->
+                <!--<executions>
+                    <execution>
+                        <id>start-jetty</id>
+                        <phase>process-test-classes</phase>
+
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+
+                        <configuration>
+                            <scanIntervalSeconds>0</scanIntervalSeconds>
+                            <daemon>true</daemon>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>stop-jetty</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.3</version>
+                <configuration>-->
+                    <!-- verify that the system property for jetty port is set properly -->
+                    <!--<systemPropertyVariables>
+                        <jetty.port>${jetty.port}</jetty.port>
+                    </systemPropertyVariables>
+
+                </configuration>
+            </plugin>-->
         </plugins>
     </build>
     

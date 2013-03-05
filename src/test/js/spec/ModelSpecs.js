@@ -149,18 +149,35 @@ describe("Backbone model tests", function() {
             expect(this.shifts.url).toEqual("wss/shifts");
         });
 
-        it("should arrange the shifts by start time", function() {
-            this.shifts.add({startTime: 1});
-            this.shifts.add({startTime: 2});
-            this.shifts.add({startTime: 3});
-            this.shifts.add({startTime: 4});
-
+        it("should order the shifts by start time", function() {
+            this.shifts.add({startTime: 1362483235385}); // 2
+            this.shifts.add({startTime: 1362483135385}); // 1
+            this.shifts.add({startTime: 1362483435385}); // 4
+            this.shifts.add({startTime: 1362483335385}); // 3
+            
             var shiftsJSON = this.shifts.toJSON();
 
-            expect(shiftsJSON[0].startTime).toBe(1);
-            expect(shiftsJSON[1].startTime).toBe(2);
-            expect(shiftsJSON[2].startTime).toBe(3);
-            expect(shiftsJSON[3].startTime).toBe(4);
+            expect(shiftsJSON[0].startTime).toBe(1362483135385); // 1
+            expect(shiftsJSON[1].startTime).toBe(1362483235385); // 2
+            expect(shiftsJSON[2].startTime).toBe(1362483335385); // 3
+            expect(shiftsJSON[3].startTime).toBe(1362483435385); // 4
+        });
+
+        it("should make the correct server request", function() {
+            // Spy on jQuery's ajax method
+            var spy = sinon.spy(jQuery, "ajax");
+
+            // "fill" the model
+            this.shifts.fetch();
+
+            // Spy was called?
+            expect(spy.called).toBe(true);
+
+            // Check url property of first argument
+            expect(spy.getCall(0).args[0].url).toEqual("wss/shifts");
+
+            // Restore jQuery.ajax to normal
+            jQuery.ajax.restore();
         });
     });
 

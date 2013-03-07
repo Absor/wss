@@ -1,7 +1,9 @@
 package ht.haapala.wss.data;
 
 /**
- *
+ * Helper class for hiding information when outputing JSON data. Only shows
+ * username.
+ * 
  * @author Heikki Haapala
  */
 public class BareUser {

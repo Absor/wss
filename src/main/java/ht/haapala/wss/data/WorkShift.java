@@ -13,7 +13,8 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * Database relational class for work shifts.
+ * 
  * @author Heikki Haapala
  */
 @Entity

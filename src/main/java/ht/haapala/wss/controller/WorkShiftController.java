@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- *
+ * Controller for work shift data. Users JSON for input and output.
+ * 
  * @author Heikki Haapala
  */
 @Controller
@@ -24,6 +25,13 @@ public class WorkShiftController {
     @Autowired
     private WorkShiftService shiftService;
 
+    /**
+     * Handles POST requests to "shifts". Creates a new work shift with given
+     * data.
+     * 
+     * @param shift given data from request body
+     * @return saved work shift
+     */
     @RequestMapping(value = "", method = RequestMethod.POST,
     consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -32,6 +40,11 @@ public class WorkShiftController {
         return shiftService.save(shift);
     }
     
+    /**
+     * Handles GET requests to "shifts". Returns a list of all work shifts.
+     * 
+     * @return a list of all work shifts
+     */
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
@@ -39,6 +52,12 @@ public class WorkShiftController {
         return shiftService.findAll();
     }
     
+    /**
+     * Handles DELETE requests to "shifts/id". Deletes the shift with the given
+     * id.
+     * 
+     * @param shiftId id from path
+     */
     @RequestMapping(value = "{shiftId}", method = RequestMethod.DELETE)
     @ResponseBody
     @PreAuthorize("hasRole('employer')")

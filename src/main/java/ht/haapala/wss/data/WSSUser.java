@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
+ * Database relational class for users.
  *
  * @author Heikki Haapala
  */
@@ -79,18 +80,30 @@ public class WSSUser implements Serializable {
         this.email = email;
     }
 
+    /**
+     * Unencoded password is given in this field.
+     */
     public String getBarePassword() {
         return barePassword;
     }
 
+    /**
+     * Unencoded password is given in this field.
+     */
     public void setBarePassword(String barePassword) {
         this.barePassword = barePassword;
     }
 
+    /**
+     * Same as username. For backbone to work nicely.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Same as username. For backbone to work nicely.
+     */
     public void setId(String id) {
         this.id = id;
     }

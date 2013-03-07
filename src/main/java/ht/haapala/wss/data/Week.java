@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ht.haapala.wss.data;
 
 import java.util.ArrayList;
@@ -11,7 +7,9 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
 
 /**
- *
+ * Class for representing week information with year and weeknumber information
+ * and a list of the week's dates.
+ * 
  * @author Heikki Haapala
  */
 public class Week {
@@ -20,6 +18,9 @@ public class Week {
     private int weekNumber;
     private List<Date> days;
 
+    /**
+     * Constructor for current week.
+     */
     public Week() {
         this.days = new ArrayList<Date>();
         LocalDate now = LocalDate.now().withDayOfWeek(DateTimeConstants.MONDAY);
@@ -31,6 +32,12 @@ public class Week {
         }
     }
 
+    /**
+     * Constructor for given week.
+     * 
+     * @param year given year
+     * @param weekNumber week number
+     */
     public Week(int year, int weekNumber) {
         this.days = new ArrayList<Date>();
         LocalDate now = LocalDate.now().withYear(year).withWeekOfWeekyear(weekNumber).withDayOfWeek(DateTimeConstants.MONDAY);

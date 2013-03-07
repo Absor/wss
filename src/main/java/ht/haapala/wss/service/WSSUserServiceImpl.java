@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service for users.
+ *
+ * @author Heikki Haapala
+ */
 @Service
 public class WSSUserServiceImpl implements WSSUserService {
 
@@ -17,6 +22,12 @@ public class WSSUserServiceImpl implements WSSUserService {
     @Autowired
     PlannedShiftRepository plannedShiftRepository;
 
+    /**
+     * Handles transactions to find a user by username.
+     * 
+     * @param username given username
+     * @return user by the given username
+     */
     @Override
     @Transactional(readOnly = true)
     public WSSUser findOne(String username) {
@@ -27,6 +38,11 @@ public class WSSUserServiceImpl implements WSSUserService {
         return findOne;
     }
 
+    /**
+     * Handles transactions to find all users.
+     *
+     * @return a list of all users
+     */
     @Override
     @Transactional(readOnly = true)
     public List<WSSUser> findAll() {
@@ -39,6 +55,12 @@ public class WSSUserServiceImpl implements WSSUserService {
         return findAll;
     }
 
+    /**
+     * Handles transactions to create a new user.
+     * 
+     * @param user user data
+     * @return saved user
+     */
     @Override
     @Transactional(readOnly = false)
     public WSSUser save(WSSUser user) {
@@ -49,10 +71,16 @@ public class WSSUserServiceImpl implements WSSUserService {
         return save;
     }
 
+    /**
+     * Handles transactions to delete user by username.
+     * 
+     * @param username user to be deleted
+     */
     @Override
     @Transactional(readOnly = false)
     public void delete(String username) {
         WSSUser user = userRepository.findOne(username);
+        // deletes also planned shifts that the user has
         if (user != null) {
             List<PlannedShift> shifts = plannedShiftRepository.findByEmployee(user);
             if (shifts != null) {

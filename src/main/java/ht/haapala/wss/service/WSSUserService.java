@@ -4,7 +4,8 @@ import ht.haapala.wss.data.WSSUser;
 import java.util.List;
 
 /**
- *
+ * Interface for user service.
+ * 
  * @author Heikki Haapala
  */
 public interface WSSUserService {

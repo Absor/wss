@@ -4,7 +4,8 @@ import ht.haapala.wss.data.WorkShift;
 import java.util.List;
 
 /**
- *
+ * Interface for work shift service.
+ * 
  * @author Heikki Haapala
  */
 public interface WorkShiftService {

@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- *
+ * Controller for planned shifts and week info. Uses JSON for input and output.
+ * 
  * @author Heikki Haapala
  */
 @Controller
@@ -34,6 +35,16 @@ public class PlannedShiftController {
     @Autowired
     WSSUserService userService;
 
+    /**
+     * Handles POST requests to "plannedshifts/username/shiftId". Gets date as a
+     * parameter from request and creates a new planned shift for
+     * username/shift/date combination.
+     * 
+     * @param date the date from request
+     * @param username username from path
+     * @param shiftId shift id from path
+     * @return the saved planned shift
+     */
     @RequestMapping(value = "{username}/{shiftId}", method = RequestMethod.POST,
     consumes = "application/json", produces = "application/json")
     @ResponseBody
@@ -59,6 +70,12 @@ public class PlannedShiftController {
         return plannedShiftService.save(plannedShift);
     }
 
+    /**
+     * Handles GET requests to "wss/plannedshifts". Responds with the current
+     * week's planned shift list.
+     * 
+     * @return list of current week's planned shifts
+     */
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
@@ -67,6 +84,14 @@ public class PlannedShiftController {
         return plannedShiftService.findByWeek(now.getYear(), now.getWeekOfWeekyear());
     }
 
+    /**
+     * Handles GET requests to "plannedshifts/year/weeknumber". Responds with
+     * the week's planned shift list.
+     * 
+     * @param year requested year from path
+     * @param weekNumber requested week number from path
+     * @return list of planned shifts for that week
+     */
     @RequestMapping(value = "{year}/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
@@ -74,6 +99,12 @@ public class PlannedShiftController {
         return plannedShiftService.findByWeek(year, weekNumber);
     }
 
+    /**
+     * Handles DELETE requests to "plannedshifts/id". Deletes the shift that has
+     * the id.
+     * 
+     * @param plannedShiftId shift id from path
+     */
     @RequestMapping(value = "{plannedShiftId}", method = RequestMethod.DELETE)
     @ResponseBody
     @PreAuthorize("hasRole('employer')")
@@ -82,6 +113,13 @@ public class PlannedShiftController {
     }
     
     // Week info
+    
+    /**
+     * Handles GET requests to plannedshifts/weekinfo. Responds with the info of
+     * the current week (dates for each day and year/week number).
+     * 
+     * @return the current week info
+     */
     @RequestMapping(value = "weekinfo", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")
@@ -89,6 +127,15 @@ public class PlannedShiftController {
         return new Week();
     }
 
+    /**
+     * Handles GET requests to plannedshifts/weekinfo/year/weeknumber. Responds
+     * with the info of the requested week (dates for each day and year/week
+     * number).
+     * 
+     * @param year year from path
+     * @param weekNumber week number from path
+     * @return the requested week info
+     */
     @RequestMapping(value = "weekinfo/{year}/{weekNumber}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @PreAuthorize("permitAll")

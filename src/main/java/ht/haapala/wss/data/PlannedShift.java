@@ -16,7 +16,8 @@ import javax.validation.constraints.NotNull;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
- *
+ * Database relational class for planned shifts.
+ * 
  * @author Heikki Haapala
  */
 @Entity
@@ -74,10 +75,16 @@ public class PlannedShift implements Serializable {
         this.id = id;
     }
 
+    /**
+     * For hiding user data in JSON responses.
+     */
     public BareUser getBareEmployee() {
         return bareEmployee;
     }
 
+    /**
+     * For hiding user data in JSON responses.
+     */
     public void setBareEmployee(BareUser bareEmployee) {
         this.bareEmployee = bareEmployee;
     }
